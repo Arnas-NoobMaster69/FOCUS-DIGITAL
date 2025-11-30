@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOCUS DIGITAL | Агентство Прибыльного Маркетинга</title>
+    
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* --- CORE SETTINGS --- */
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 20, 0.6);
+            --text-main: #ffffff;
+            --text-muted: #A1A1AA;
+            --accent: #FF4D00; /* Более агрессивный оранжевый */
+            --accent-glow: rgba(255, 77, 0, 0.4);
+            --border: rgba(255, 255, 255, 0.08);
+            --glass: blur(20px);
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            margin: 0;
+            font-family: 'Manrope', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            overflow-x: hidden;
+            font-size: 16px;
+        }
+
+        /* Дорогой "шум" на фоне */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Типографика */
+        h1, h2, h3, h4 { margin: 0; font-weight: 800; letter-spacing: -0.03em; color: #fff; }
+        p { color: var(--text-muted); font-size: 1.1rem; margin-top: 15px; font-weight: 400; }
+        a { text-decoration: none; transition: 0.3s; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        section { padding: 120px 0; position: relative; }
+
+        /* --- BUTTONS & UI --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--text-main);
+            color: #000;
+            padding: 18px 40px;
+            font-weight: 700;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #fff;
+            cursor: pointer;
+        }
+        
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+            transition: 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
+        
+        .btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 40px var(--accent-glow);
+            transform: translateY(-3px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { border-color: #fff; background: rgba(255,255,255,0.05); }
+
+        .section-header { margin-bottom: 60px; max-width: 700px; }
+        .section-title { font-size: clamp(36px, 5vw, 56px); line-height: 1.1; margin-bottom: 20px; }
+        .accent-text { 
+            color: var(--accent); 
+            font-size: 12px; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            font-weight: 700; 
+            display: inline-block; 
+            margin-bottom: 15px;
+            padding: 5px 10px;
+            background: rgba(255, 77, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 20px 0;
+            background: rgba(5, 5, 5, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; display: flex; align-items: center; gap: 5px; }
+        .logo span { color: var(--accent); }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: #ccc; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: #fff; }
+
+        /* --- HERO --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px; /* Компенсация хедера */
+        }
+        #hero-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.5; }
+        
+        .hero-content { position: relative; z-index: 2; max-width: 900px; }
+        .hero h1 {
+            font-size: clamp(48px, 9vw, 90px);
+            line-height: 1.05;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        .hero h1 span { 
+            color: transparent; 
+            -webkit-text-stroke: 1px rgba(255,255,255,0.5); /* Стильный контурный текст */
+        }
+        .hero h1 em {
+            font-style: normal;
+            color: var(--accent);
+            text-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .hero-desc { max-width: 580px; font-size: 18px; margin-bottom: 40px; color: #ccc; border-left: 2px solid var(--accent); padding-left: 20px; }
+        
+        .hero-btns { display: flex; gap: 20px; }
+
+        /* --- STATS BAR (TRUST) --- */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 30px 0;
+            margin-top: 0;
+        }
+        .stat-item { text-align: center; border-right: 1px solid var(--border); }
+        .stat-item:last-child { border-right: none; }
+        .stat-num { font-size: 32px; font-weight: 800; color: #fff; display: block; margin-bottom: 5px; }
+        .stat-label { font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- SERVICES (GLASS CARDS) --- */
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .service-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border: 1px solid var(--border);
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .service-card:hover { 
+            border-color: var(--accent); 
+            transform: translateY(-5px); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .service-card::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at top right, var(--accent-glow), transparent 40%);
+            opacity: 0; transition: 0.4s;
+        }
+        .service-card:hover::after { opacity: 1; }
+
+        .service-num { font-size: 14px; color: var(--accent); font-family: monospace; margin-bottom: 15px; display: block; }
+        .service-card h3 { font-size: 24px; margin-bottom: 15px; position: relative; z-index: 2; }
+        .service-card p { font-size: 15px; position: relative; z-index: 2; }
+
+        /* --- CASES (VISUAL) --- */
+        .cases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; }
+        .case-card { cursor: pointer; group; }
+        
+        .case-visual { 
+            height: 280px; 
+            overflow: hidden; 
+            border-radius: 8px; 
+            position: relative; 
+            margin-bottom: 25px; 
+            border: 1px solid var(--border);
+        }
+        .case-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .case-card:hover .case-img { transform: scale(1.08); }
+        
+        /* Overlay with results on hover */
+        .case-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; 
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            transform: translateY(100%); transition: 0.4s;
+            display: flex; gap: 20px;
+        }
+        .case-card:hover .case-overlay { transform: translateY(0); }
+        
+        .case-stat strong { color: var(--accent); font-size: 20px; display: block; }
+        .case-stat span { color: #fff; font-size: 12px; }
+
+        .case-info h3 { font-size: 22px; margin-bottom: 10px; transition: 0.3s; }
+        .case-card:hover .case-info h3 { color: var(--accent); }
+        .case-cat { font-size: 13px; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+
+        /* --- PROCESS (STEPS) --- */
+        .process-row { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; align-items: start; }
+        .step-list { border-left: 1px solid #222; padding-left: 0; }
+        .step { 
+            padding: 0 0 40px 40px; 
+            position: relative; 
+        }
+        .step::before {
+            content: ''; position: absolute; left: -5px; top: 5px; 
+            width: 9px; height: 9px; background: #333; border-radius: 50%;
+            transition: 0.3s;
+        }
+        .step:hover::before { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+        .step h4 { font-size: 20px; margin-bottom: 10px; }
+
+        /* --- CTA FORM --- */
+        .cta-section {
+            background: radial-gradient(circle at center, #1a0a00 0%, #050505 70%);
+            text-align: center;
+            padding: 150px 0;
+            border-top: 1px solid var(--border);
+        }
+        .cta-box { max-width: 700px; margin: 0 auto; }
+        .cta-offer { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid var(--accent); 
+            display: inline-block; 
+            padding: 10px 20px; 
+            border-radius: 50px; 
+            margin-bottom: 30px;
+            color: #fff; font-weight: 600; font-size: 14px;
+        }
+
+        /* --- FOOTER --- */
+        footer { padding: 50px 0; border-top: 1px solid var(--border); color: #444; font-size: 14px; display: flex; justify-content: space-between; }
+
+        /* --- MOBILE ADAPTIVE (Optimized) --- */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 60px; }
+            .process-row { grid-template-columns: 1fr; gap: 40px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 20px 0; }
+            .stat-item:nth-child(2) { border-right: none; }
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 80px 0; }
+            
+            /* Header Mobile */
+            .nav-links { display: none; } /* Скрываем меню для простоты, оставляем кнопку */
+            
+            /* Hero Mobile */
+            .hero { padding-top: 120px; height: auto; display: block; padding-bottom: 60px; }
+            .hero h1 { font-size: 42px; margin-bottom: 20px; }
+            .hero-btns { flex-direction: column; width: 100%; }
+            .btn { width: 100%; padding: 20px; }
+            .hero-desc { font-size: 16px; margin-bottom: 30px; border-left: none; padding-left: 0; }
+
+            /* Stats Mobile */
+            .stats-bar { display: none; } /* Убираем на моб, чтобы не грузить */
+
+            /* Services Mobile */
+            .services-grid { grid-template-columns: 1fr; gap: 15px; }
+            .service-card { padding: 25px; }
+
+            /* Cases Mobile */
+            .cases-grid { grid-template-columns: 1fr; gap: 30px; }
+            .case-visual { height: 220px; }
+            .case-overlay { transform: translateY(0); background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); } /* Всегда видно */
+
+            /* Process Mobile */
+            .step { padding-left: 25px; padding-bottom: 30px; }
+            .step h4 { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="hero-canvas"></canvas>
+
+    <header>
+        <div class="container nav-flex">
+            <div class="logo">FOCUS<span>.DIGITAL</span></div>
+            <nav class="nav-links">
+                <a href="#services">Решения</a>
+                <a href="#cases">Кейсы</a>
+                <a href="#process">Процесс</a>
+            </nav>
+            <a href="https://wa.me/7066377126" class="btn btn-outline" style="padding: 10px 20px; font-size: 14px;">WhatsApp</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="accent-text" data-aos="fade-right">Performance Agency</span>
+                <h1 data-aos="fade-up" data-aos-delay="100">
+                    Трафик.<br>
+                    <span>Заявки.</span><br>
+                    <em>Продажи.</em>
+                </h1>
+                <p class="hero-desc" data-aos="fade-up" data-aos-delay="200">
+                    Хватит сливать бюджет на "красивый контент". Мы строим системы привлечения клиентов в Facebook, Instagram и Google с прозрачным ROI.
+                </p>
+                <div class="hero-btns" data-aos="fade-up" data-aos-delay="300">
+                    <a href="#cta" class="btn">Получить стратегию</a>
+                    <a href="#cases" class="btn btn-outline">Смотреть результаты</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="stats-bar" data-aos="fade-up">
+            <div class="stat-item">
+                <span class="stat-num">$2.4M</span>
+                <span class="stat-label">Выручка клиентов</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">45+</span>
+                <span class="stat-label">Успешных ниш</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">x3.5</span>
+                <span class="stat-label">Средний ROAS</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">24/7</span>
+                <span class="stat-label">Контроль ставок</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="services">
+        <div class="container">
+            <div class="section-header">
+                <span class="accent-text" data-aos="fade-right">Наши методы</span>
+                <h2 class="section-title" data-aos="fade-up">Не просто "СММ", <br>а инструменты роста</h2>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+                    <span class="service-num">/01</span>
+                    <h3>Target Performance</h3>
+                    <p>Настройка таргета с целью "Продажи". Глубокая сегментация, ретаргетинг, Look-alike аудитории и А/Б тесты креативов.</p>
+                </div>
+                <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+                    <span class="service-num">/02</span>
+                    <h3>Visual & Packing</h3>
+                    <p>Упаковка профиля, которая закрывает возражения клиента до того, как он напишет. Смыслы, триггеры, продающий дизайн.</p>
+                </div>
+                <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+                    <span class="service-num">/03</span>
+                    <h3>Sales Funnels</h3>
+                    <p>Автоматизация. Чат-боты, прогревочные воронки, внедрение CRM. Мы делаем так, чтобы заявки не терялись.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="cases">
+        <div class="container">
+            <div class="section-header">
+                <span class="accent-text">Портфолио</span>
+                <h2 class="section-title">Цифры говорят <br>громче слов</h2>
+            </div>
+
+            <div class="cases-grid">
+                
+                <div class="case-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="case-visual">
+                        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Case 1" class="case-img">
+                        <div class="case-overlay">
+                            <div class="case-stat">
+                                <strong>+460%</strong>
+                                <span>Выручка</span>
+                            </div>
+                            <div class="case-stat">
+                                <strong>$0.3</strong>
+                                <span>Цена лида</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case-info">
+                        <span class="case-cat">E-commerce / Одежда</span>
+                        <h3>Oryx Brand</h3>
+                        <p style="font-size: 14px; margin-top: 5px;">Масштабирование продаж через Instagram Shop и сайт.</p>
+                    </div>
+                </div>
+
+                <div class="case-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="case-visual">
+                        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Case 2" class="case-img">
+                        <div class="case-overlay">
+                            <div class="case-stat">
+                                <strong>2300</strong>
+                                <span>Подписчиков</span>
+                            </div>
+                            <div class="case-stat">
+                                <strong>x3</strong>
+                                <span>Трафик</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case-info">
+                        <span class="case-cat">Retail / Магазин</span>
+                        <h3>Jalan Jalan Japan</h3>
+                        <p style="font-size: 14px; margin-top: 5px;">Открытие новой точки и создание ажиотажа в день открытия.</p>
+                    </div>
+                </div>
+
+                <div class="case-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="case-visual">
+                        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Case 3" class="case-img">
+                        <div class="case-overlay">
+                            <div class="case-stat">
+                                <strong>$12k</strong>
+                                <span>Продаж</span>
+                            </div>
+                            <div class="case-stat">
+                                <strong>ROI 450%</strong>
+                                <span>Окупаемость</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case-info">
+                        <span class="case-cat">Недвижимость</span>
+                        <h3>ЖК "Prime Park"</h3>
+                        <p style="font-size: 14px; margin-top: 5px;">Генерация квалифицированных лидов на покупку квартир.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="process">
+        <div class="container process-row">
+            <div data-aos="fade-right">
+                <span class="accent-text">Как мы работаем</span>
+                <h2 class="section-title">Системный подход к результату</h2>
+                <p>Мы не гадаем на кофейной гуще. Маркетинг — это математика, психология и четкие алгоритмы действий.</p>
+                <div style="margin-top: 40px;">
+                    <a href="#cta" class="btn btn-outline">Обсудить проект</a>
+                </div>
+            </div>
+            
+            <div class="step-list" data-aos="fade-left">
+                <div class="step">
+                    <h4>01. Аудит и Декомпозиция</h4>
+                    <p>Считаем юнит-экономику. Понимаем, сколько вы можете платить за клиента, чтобы быть в плюсе.</p>
+                </div>
+                <div class="step">
+                    <h4>02. Создание Офферов</h4>
+                    <p>Пишем тексты и делаем макеты, которые бьют в боли вашей ЦА, а не просто "красиво выглядят".</p>
+                </div>
+                <div class="step">
+                    <h4>03. Запуск и Тесты</h4>
+                    <p>Запускаем 10-20 групп объявлений. Через 3 дня отключаем то, что жрет деньги, и масштабируем то, что приносит прибыль.</p>
+                </div>
+                <div class="step">
+                    <h4>04. Аналитика и Отчетность</h4>
+                    <p>Еженедельные отчеты. Вы видите: Потрачено -> Получено заявок -> Продаж -> Чистая прибыль.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="cta">
+        <div class="container cta-box">
+            <div class="cta-offer" data-aos="zoom-in">Ограниченное предложение</div>
+            <h2 class="section-title" data-aos="fade-up">Готовы кратно <br>увеличить прибыль?</h2>
+            <p data-aos="fade-up" data-aos-delay="100" style="margin-bottom: 40px; color: #aaa;">
+                Запишитесь на бесплатный разбор вашего бизнеса. Мы покажем точки роста и рассчитаем прогноз окупаемости рекламы.
+            </p>
+            <div data-aos="flip-up" data-aos-delay="200">
+                <a href="https://wa.me/7066377126?text=Здравствуйте,%20хочу%20получить%20стратегию%20продвижения." class="btn">
+                    Написать в WhatsApp
+                </a>
+                <p style="font-size: 13px; margin-top: 15px; opacity: 0.5;">Отвечаем в течение 15 минут</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <span>© 2025 FOCUS DIGITAL. Almaty.</span>
+            <span>Performance Marketing Agency</span>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            offset: 100,
+            duration: 800,
+            easing: 'ease-out-cubic'
+        });
+
+        // ANIMATED BACKGROUND CANVAS (Optimized)
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        // Colors
+        const particleColor = 'rgba(255, 255, 255, 0.3)';
+        const lineColor = 'rgba(255, 77, 0, 0.2)'; // Orange faint
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = particleColor;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            // Calculate particle count based on screen size (mobile optimization)
+            const count = window.innerWidth < 768 ? 30 : 70;
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < 120) {
+                        ctx.strokeStyle = lineColor;
+                        ctx.lineWidth = 1 - dist/120;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => { resize(); init(); });
+        resize();
+        init();
+        animate();
+    </script>
+</body>
+</html>
