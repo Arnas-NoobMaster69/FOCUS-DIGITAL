@@ -3,101 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOCUS DIGITAL | The Growth Department</title>
+    <title>FOCUS | Digital Growth Agency</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;700;800&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <canvas id="liquid-canvas"></canvas>
+    
+    <div class="noise-overlay"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
     <div class="preloader">
-        <div class="loader-text">
-            <span>F</span><span>O</span><span>C</span><span>U</span><span>S</span><span>.</span><span>D</span><span>I</span><span>G</span><span>I</span><span>T</span><span>A</span><span>L</span>
+        <div class="counter">0%</div>
+        <div class="preloader-text">
+            <span>SYSTEM</span>
+            <span>LOADING</span>
         </div>
     </div>
 
     <div id="smooth-wrapper">
         <div id="smooth-content">
             
-            <header>
-                <div class="container nav-inner">
-                    <div class="logo">FOCUS.</div>
-                    <div class="nav-cta">
-                        <a href="#contact" class="btn btn-outline">Start Project</a>
-                    </div>
-                </div>
+            <header class="header">
+                <a href="#" class="logo">FOCUS<span class="dot">.</span></a>
+                <nav class="nav-menu">
+                    <a href="#work" class="nav-link">Кейсы</a>
+                    <a href="#process" class="nav-link">Подход</a>
+                    <a href="#contact" class="btn-header">Обсудить проект</a>
+                </nav>
             </header>
 
-            <section class="hero-section" data-bgcolor="#000000">
+            <section class="hero">
                 <div class="container">
                     <h1 class="hero-title">
-                        <span class="line-reveal"><span>Мы создаем</span></span>
-                        <span class="line-reveal"><span class="accent-stroke">Цифровую</span></span>
-                        <span class="line-reveal"><span>Прибыль.</span></span>
+                        <div class="line"><span>МЫ НЕ РИСУЕМ</span></div>
+                        <div class="line"><span class="outline">ДИЗАЙН.</span></div>
+                        <div class="line"><span>МЫ ПРОЕКТИРУЕМ</span></div>
+                        <div class="line"><span class="accent">ПРИБЫЛЬ.</span></div>
                     </h1>
-                    <p class="hero-subtext">Агрессивный Performance-маркетинг для масштабирования бизнеса в Казахстане и СНГ.</p>
-                </div>
-                
-                <div class="animated-object" id="hero-animation-placeholder">
-                    <div class="placeholder-shape"></div>
-                </div>
-            </section>
-
-            <section class="pin-narrative-section">
-                <div class="container pin-narrative-container">
-                    <div class="pin-text-wrap">
-                        <p class="pin-text" id="pin-text-1">1. Мы не тратим ваш бюджет на "красивые картинки". Мы инвестируем его в **математически обоснованный** трафик.</p>
-                        <p class="pin-text" id="pin-text-2">2. Каждая кампания проходит **жесткий A/B тест** для поиска самой конверсионной связки.</p>
-                        <p class="pin-text" id="pin-text-3">3. Вы получаете не отчеты, а **реальный ROI**. Наша цель — **X2** к вашей чистой прибыли за 90 дней.</p>
-                    </div>
-                </div>
-                <div class="narrative-bg-changer"></div>
-            </section>
-
-            <section class="section-padding" data-bgcolor="#0f0f0f">
-                <div class="container">
-                    <h2 class="section-heading">Наши отделы роста</h2>
-                    <div class="services-grid">
-                        <div class="service-card" data-idx="01">
-                            <h3>Performance & Media Buying</h3>
-                            <p>Мы покупаем внимание. Facebook, Instagram, Google. Исключительно конверсионные цели.</p>
-                            <span class="read-more">ROI > X2</span>
-                        </div>
-                        <div class="service-card" data-idx="02">
-                            <h3>Visual Strategy & Packaging</h3>
-                            <p>Упаковка, которая закрывает 90% возражений клиента. Сценарии, фото, дизайн. Доверие = Продажи.</p>
-                            <span class="read-more">Уникальный Tone of Voice</span>
-                        </div>
-                        <div class="service-card" data-idx="03">
-                            <h3>Analytics & Automation</h3>
-                            <p>Сквозная аналитика и CRM. Вы видите, сколько стоит каждый лид и каждая продажа в реальном времени.</p>
-                            <span class="read-more">Прозрачность 100%</span>
+                    <div class="hero-footer">
+                        <p class="hero-desc">Премиальный веб-продакшн и performance-маркетинг для амбициозных брендов.</p>
+                        <div class="scroll-indicator">
+                            <span>SCROLL</span>
+                            <div class="line-down"></div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="final-cta" data-bgcolor="#FF4400" id="contact">
+            <div class="marquee-section">
+                <div class="marquee-content">
+                    <span>STRATEGY — DEVELOPMENT — DESIGN — MARKETING — ROI — GROWTH — </span>
+                    <span>STRATEGY — DEVELOPMENT — DESIGN — MARKETING — ROI — GROWTH — </span>
+                </div>
+            </div>
+
+            <section class="philosophy" id="process">
                 <div class="container">
-                    <h2 class="cta-heading">
-                        <span class="cta-line-1">Не теряйте время.</span>
-                        <span class="cta-line-2">Начните расти.</span>
-                    </h2>
-                    <a href="https://wa.me/7066377126?text=Здравствуйте,%20хочу%20обсудить%20проект." class="btn btn-dark">
-                        Запросить Стратегию (WhatsApp)
-                    </a>
+                    <div class="philosophy-wrapper">
+                        <div class="ph-left">
+                            <h2 class="section-title">НАШ МЕТОД</h2>
+                        </div>
+                        <div class="ph-right">
+                            <div class="ph-item active" data-img="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop">
+                                <span class="num">01</span>
+                                <h3>Аналитика вместо гаданий</h3>
+                                <p>Мы не верим в "красиво". Мы верим в цифры. Прежде чем открыть Figma, мы разбираем вашу воронку продаж на атомы.</p>
+                            </div>
+                            <div class="ph-item" data-img="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop">
+                                <span class="num">02</span>
+                                <h3>Визуальная доминация</h3>
+                                <p>В мире информационного шума выигрывает тот, кто громче. Мы создаем дизайн, который невозможно игнорировать.</p>
+                            </div>
+                            <div class="ph-item" data-img="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop">
+                                <span class="num">03</span>
+                                <h3>Техническое совершенство</h3>
+                                <p>GSAP анимации, WebGL, чистый код. Ваш сайт будет летать быстрее, чем мысли ваших конкурентов.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
+            <section class="work" id="work">
+                <div class="container">
+                    <h2 class="section-title">УСЛУГИ</h2>
+                    <div class="work-list">
+                        <div class="work-item">
+                            <div class="work-info">
+                                <h3>Web Development</h3>
+                                <p>Корпоративные сайты & E-commerce</p>
+                            </div>
+                            <div class="work-img-reveal">
+                                <img src="https://images.unsplash.com/photo-1481487484168-9b930d5b7960?q=80&w=2000&auto=format&fit=crop" alt="Web">
+                            </div>
+                        </div>
+                        <div class="work-item">
+                            <div class="work-info">
+                                <h3>Branding & Identity</h3>
+                                <p>Упаковка смыслов</p>
+                            </div>
+                            <div class="work-img-reveal">
+                                <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2000&auto=format&fit=crop" alt="Branding">
+                            </div>
+                        </div>
+                        <div class="work-item">
+                            <div class="work-info">
+                                <h3>Performance</h3>
+                                <p>Трафик, лиды, продажи</p>
+                            </div>
+                            <div class="work-img-reveal">
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop" alt="Marketing">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cta" id="contact">
+                <div class="container">
+                    <div class="cta-wrapper">
+                        <p class="cta-subtitle">Готовы к росту?</p>
+                        <h2 class="cta-title">
+                            <span>ДАВАЙТЕ</span>
+                            <span>СДЕЛАЕМ</span>
+                            <span class="accent-text">ИСТОРИЮ.</span>
+                        </h2>
+                        <div class="cta-buttons">
+                            <a href="https://wa.me/7066377126" class="btn-main magnet-btn">
+                                <span class="btn-text">Написать в WhatsApp</span>
+                                <span class="btn-fill"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <div class="container">
+                    <div class="footer-content">
+                        <span>© 2025 FOCUS DIGITAL.</span>
+                        <span>ALMATY, KAZAKHSTAN.</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.27/bundled/lenis.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
