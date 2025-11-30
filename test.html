@@ -3,163 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOCUS | Digital Growth Agency</title>
+    <title>CUBERTO LEVEL | Digital Production</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <canvas id="liquid-canvas"></canvas>
+    <div id="canvas-container"></div>
     
-    <div class="noise-overlay"></div>
+    <div class="grain-overlay"></div>
 
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
+    <div class="cursor"></div>
 
-    <div class="preloader">
-        <div class="counter">0%</div>
-        <div class="preloader-text">
-            <span>SYSTEM</span>
-            <span>LOADING</span>
-        </div>
-    </div>
+    <nav class="navbar">
+        <div class="logo">AGENCY<span class="accent">.</span></div>
+        <div class="menu-btn">MENU</div>
+    </nav>
 
     <div id="smooth-wrapper">
         <div id="smooth-content">
-            
-            <header class="header">
-                <a href="#" class="logo">FOCUS<span class="dot">.</span></a>
-                <nav class="nav-menu">
-                    <a href="#work" class="nav-link">Кейсы</a>
-                    <a href="#process" class="nav-link">Подход</a>
-                    <a href="#contact" class="btn-header">Обсудить проект</a>
-                </nav>
-            </header>
 
             <section class="hero">
                 <div class="container">
-                    <h1 class="hero-title">
-                        <div class="line"><span>МЫ НЕ РИСУЕМ</span></div>
-                        <div class="line"><span class="outline">ДИЗАЙН.</span></div>
-                        <div class="line"><span>МЫ ПРОЕКТИРУЕМ</span></div>
-                        <div class="line"><span class="accent">ПРИБЫЛЬ.</span></div>
-                    </h1>
-                    <div class="hero-footer">
-                        <p class="hero-desc">Премиальный веб-продакшн и performance-маркетинг для амбициозных брендов.</p>
-                        <div class="scroll-indicator">
+                    <div class="hero-text-wrapper">
+                        <h1 class="hero-title">
+                            <div class="line"><span>DIGITAL</span></div>
+                            <div class="line"><span class="outline">EXPERIENCE</span></div>
+                            <div class="line"><span>THAT SELLS</span></div>
+                        </h1>
+                    </div>
+                    <div class="hero-sub">
+                        <p>Мы превращаем посетителей в фанатов бренда, а клики — в прибыль. <br>Веб-разработка уровня Awwwards.</p>
+                        <div class="scroll-down">
                             <span>SCROLL</span>
-                            <div class="line-down"></div>
+                            <div class="arrow">↓</div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <div class="marquee-section">
-                <div class="marquee-content">
-                    <span>STRATEGY — DEVELOPMENT — DESIGN — MARKETING — ROI — GROWTH — </span>
-                    <span>STRATEGY — DEVELOPMENT — DESIGN — MARKETING — ROI — GROWTH — </span>
+            <div class="marquee-wrap">
+                <div class="marquee">
+                    <span>STRATEGY — UI/UX DESIGN — DEVELOPMENT — 3D MOTION — BRANDING — </span>
+                    <span>STRATEGY — UI/UX DESIGN — DEVELOPMENT — 3D MOTION — BRANDING — </span>
                 </div>
             </div>
 
-            <section class="philosophy" id="process">
+            <section class="about section-padding">
                 <div class="container">
-                    <div class="philosophy-wrapper">
-                        <div class="ph-left">
-                            <h2 class="section-title">НАШ МЕТОД</h2>
-                        </div>
-                        <div class="ph-right">
-                            <div class="ph-item active" data-img="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop">
-                                <span class="num">01</span>
-                                <h3>Аналитика вместо гаданий</h3>
-                                <p>Мы не верим в "красиво". Мы верим в цифры. Прежде чем открыть Figma, мы разбираем вашу воронку продаж на атомы.</p>
-                            </div>
-                            <div class="ph-item" data-img="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop">
-                                <span class="num">02</span>
-                                <h3>Визуальная доминация</h3>
-                                <p>В мире информационного шума выигрывает тот, кто громче. Мы создаем дизайн, который невозможно игнорировать.</p>
-                            </div>
-                            <div class="ph-item" data-img="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop">
-                                <span class="num">03</span>
-                                <h3>Техническое совершенство</h3>
-                                <p>GSAP анимации, WebGL, чистый код. Ваш сайт будет летать быстрее, чем мысли ваших конкурентов.</p>
-                            </div>
+                    <div class="about-grid">
+                        <div class="about-label">/ PHILOSOPHY</div>
+                        <div class="about-text-anim">
+                            <p class="reveal-text">Ваш сайт выглядит дешево? Значит, вы теряете деньги. В 2024 году дизайн — это не картинки. Это инструмент доминирования на рынке. Мы создаем цифровые экосистемы, которые уничтожают конкурентов.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="work" id="work">
+            <section class="projects-section" id="projects">
                 <div class="container">
-                    <h2 class="section-title">УСЛУГИ</h2>
-                    <div class="work-list">
-                        <div class="work-item">
-                            <div class="work-info">
-                                <h3>Web Development</h3>
-                                <p>Корпоративные сайты & E-commerce</p>
+                    <h2 class="section-header">ИЗБРАННЫЕ КЕЙСЫ <span class="count">(04)</span></h2>
+                </div>
+                <div class="horizontal-scroll-wrapper">
+                    <div class="projects-track">
+                        
+                        <div class="project-card">
+                            <div class="card-media">
+                                <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2000&auto=format&fit=crop" alt="Fashion">
+                                <div class="overlay"></div>
                             </div>
-                            <div class="work-img-reveal">
-                                <img src="https://images.unsplash.com/photo-1481487484168-9b930d5b7960?q=80&w=2000&auto=format&fit=crop" alt="Web">
-                            </div>
-                        </div>
-                        <div class="work-item">
-                            <div class="work-info">
-                                <h3>Branding & Identity</h3>
-                                <p>Упаковка смыслов</p>
-                            </div>
-                            <div class="work-img-reveal">
-                                <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2000&auto=format&fit=crop" alt="Branding">
+                            <div class="card-info">
+                                <h3>FASHION E-COM</h3>
+                                <p>Rebranding & Web Design</p>
                             </div>
                         </div>
-                        <div class="work-item">
-                            <div class="work-info">
-                                <h3>Performance</h3>
-                                <p>Трафик, лиды, продажи</p>
+
+                        <div class="project-card">
+                            <div class="card-media">
+                                <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop" alt="Tech">
+                                <div class="overlay"></div>
                             </div>
-                            <div class="work-img-reveal">
-                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2000&auto=format&fit=crop" alt="Marketing">
+                            <div class="card-info">
+                                <h3>FINTECH APP</h3>
+                                <p>Interface & 3D Motion</p>
                             </div>
+                        </div>
+
+                        <div class="project-card">
+                            <div class="card-media">
+                                <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop" alt="Art">
+                                <div class="overlay"></div>
+                            </div>
+                            <div class="card-info">
+                                <h3>MODERN ART</h3>
+                                <p>Immersive Experience</p>
+                            </div>
+                        </div>
+
+                         <div class="project-card">
+                            <div class="card-media">
+                                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2000&auto=format&fit=crop" alt="Cyber">
+                                <div class="overlay"></div>
+                            </div>
+                            <div class="card-info">
+                                <h3>CYBER DATA</h3>
+                                <p>Development & Backend</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section class="services section-padding">
+                <div class="container">
+                    <h2 class="section-header">УСЛУГИ</h2>
+                    <div class="service-list">
+                        <div class="service-item">
+                            <span class="num">01</span>
+                            <h3 class="name">Web Development</h3>
+                            <p class="desc">React, WebGL, High Load</p>
+                            <div class="arrow-btn">↗</div>
+                        </div>
+                        <div class="service-item">
+                            <span class="num">02</span>
+                            <h3 class="name">Visual Identity</h3>
+                            <p class="desc">Logo, Brandbook, Tone of Voice</p>
+                            <div class="arrow-btn">↗</div>
+                        </div>
+                        <div class="service-item">
+                            <span class="num">03</span>
+                            <h3 class="name">Mobile Apps</h3>
+                            <p class="desc">iOS & Android Native</p>
+                            <div class="arrow-btn">↗</div>
+                        </div>
+                        <div class="service-item">
+                            <span class="num">04</span>
+                            <h3 class="name">Marketing</h3>
+                            <p class="desc">SEO, PPC, Growth Hacking</p>
+                            <div class="arrow-btn">↗</div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="cta" id="contact">
-                <div class="container">
-                    <div class="cta-wrapper">
-                        <p class="cta-subtitle">Готовы к росту?</p>
-                        <h2 class="cta-title">
-                            <span>ДАВАЙТЕ</span>
-                            <span>СДЕЛАЕМ</span>
-                            <span class="accent-text">ИСТОРИЮ.</span>
-                        </h2>
-                        <div class="cta-buttons">
-                            <a href="https://wa.me/7066377126" class="btn-main magnet-btn">
-                                <span class="btn-text">Написать в WhatsApp</span>
-                                <span class="btn-fill"></span>
-                            </a>
-                        </div>
+            <section class="cta section-padding">
+                <div class="container center-col">
+                    <div class="cta-circle">
+                        <span>START</span>
                     </div>
+                    <h2 class="cta-title">
+                        ГОТОВЫ ОБСУДИТЬ<br>
+                        <span class="accent">ВАШ ПРОЕКТ?</span>
+                    </h2>
+                    <a href="#" class="big-btn">HELLO@AGENCY.COM</a>
                 </div>
             </section>
 
             <footer class="footer">
                 <div class="container">
-                    <div class="footer-content">
-                        <span>© 2025 FOCUS DIGITAL.</span>
-                        <span>ALMATY, KAZAKHSTAN.</span>
+                    <div class="footer-row">
+                        <p>© 2025. All rights reserved.</p>
+                        <div class="socials">
+                            <a href="#">Inst</a>
+                            <a href="#">Tg</a>
+                            <a href="#">Be</a>
+                        </div>
                     </div>
                 </div>
             </footer>
+
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
