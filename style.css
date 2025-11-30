@@ -1,0 +1,203 @@
+/* --- BASE & UTILS --- */
+:root {
+    --bg: #080808;
+    --surface: #1a1a1a;
+    --text-light: #ffffff;
+    --text-muted: #888888;
+    --accent: #FF4400; /* Neon Orange */
+    --border: rgba(255,255,255,0.1);
+    --font-heading: 'Syncopate', sans-serif;
+    --font-body: 'Manrope', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    background-color: var(--bg);
+    color: var(--text-light);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* NOISE EFFECT (Refokus style) */
+body::before {
+    content: "";
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999;
+}
+
+/* Typography */
+h1, h2, h3 { font-family: var(--font-heading); font-weight: 700; letter-spacing: -0.05em; }
+a { text-decoration: none; color: inherit; transition: 0.3s; }
+.container { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+.section-padding { padding: 120px 0; }
+.accent-stroke { 
+    color: transparent; 
+    -webkit-text-stroke: 1px var(--text-light); 
+    text-stroke: 1px var(--text-light);
+}
+.accent-color { color: var(--accent); }
+
+/* --- BUTTONS --- */
+.btn {
+    display: inline-flex; justify-content: center; align-items: center;
+    padding: 16px 35px; font-weight: 700; font-size: 14px;
+    border-radius: 50px; border: 1px solid var(--border);
+    text-transform: uppercase; letter-spacing: 1px;
+}
+.btn-outline { background: transparent; color: var(--text-light); border-color: var(--border); }
+.btn-outline:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.btn-dark { 
+    background: var(--bg); color: var(--accent); border-color: var(--bg);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* --- PRELOADER --- */
+.preloader {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background: #000; z-index: 999;
+    display: flex; justify-content: center; align-items: center;
+}
+.loader-text { font-size: 3vw; font-family: var(--font-heading); font-weight: 400; overflow: hidden; }
+.loader-text span { display: inline-block; transform: translateY(100%); }
+
+/* --- HEADER --- */
+header {
+    position: fixed; top: 0; left: 0; width: 100%;
+    padding: 20px 0; z-index: 100;
+}
+.nav-inner { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 20px; font-weight: 700; letter-spacing: -1px; }
+
+/* --- HERO SECTION --- */
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+.hero-title {
+    font-size: clamp(60px, 12vw, 150px);
+    line-height: 0.9;
+}
+.hero-title .line-reveal { overflow: hidden; display: block; }
+.hero-title span { display: block; transform: translateY(100%); }
+.hero-subtext { max-width: 500px; color: var(--text-muted); font-size: 18px; margin-top: 30px; }
+
+/* Animated Object Placeholder */
+.animated-object {
+    position: absolute; top: 15vh; right: 10vw;
+    width: clamp(250px, 30vw, 450px);
+    height: clamp(250px, 30vw, 450px);
+    z-index: 10;
+}
+.placeholder-shape {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(255, 68, 0, 0.4) 0%, rgba(255, 68, 0, 0.05) 50%, transparent 70%);
+    box-shadow: 0 0 50px rgba(255, 68, 0, 0.2);
+    transition: transform 0.1s ease-out; /* Для mouse-follow */
+}
+
+/* --- PINNED NARRATIVE SECTION (The Obys Effect) --- */
+.pin-narrative-section {
+    position: relative;
+    padding: 10vh 0;
+    min-height: 300vh; /* Увеличиваем высоту для эффекта скролла */
+}
+.pin-narrative-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    position: sticky; /* Контейнер прилипает */
+    top: 0;
+    left: 0;
+}
+.pin-text-wrap {
+    max-width: 600px;
+}
+.pin-text {
+    font-size: clamp(24px, 4vw, 48px);
+    line-height: 1.2;
+    margin: 40px 0;
+    color: var(--text-muted);
+    opacity: 0.1;
+    transition: opacity 0.5s;
+    font-family: var(--font-heading);
+}
+.pin-text strong { color: var(--accent); font-weight: 700; }
+
+/* BG Changer */
+.narrative-bg-changer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--bg);
+    z-index: -1;
+}
+
+/* --- SERVICES GRID --- */
+.section-heading { 
+    font-size: clamp(28px, 4vw, 48px); 
+    margin-bottom: 60px;
+    color: var(--accent);
+}
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 40px;
+}
+.service-card {
+    background: var(--surface);
+    padding: 40px;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+.service-card:hover { border-color: var(--accent); transform: translateY(-5px); }
+.service-card h3 { 
+    font-size: 24px; 
+    margin-bottom: 15px;
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+}
+.service-card p { color: var(--text-muted); margin-bottom: 20px; }
+.service-card span.read-more { 
+    font-family: var(--font-heading); 
+    font-size: 12px; 
+    color: var(--accent);
+    display: block;
+}
+
+/* --- FINAL CTA --- */
+.final-cta {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: var(--accent);
+    color: var(--bg);
+}
+.cta-heading {
+    font-size: clamp(40px, 8vw, 100px);
+    line-height: 1;
+    margin-bottom: 40px;
+    color: var(--bg);
+}
+.cta-heading span { display: block; overflow: hidden; }
+
+/* --- MOBILE OPTIMIZATION --- */
+@media (max-width: 768px) {
+    .section-padding { padding: 80px 0; }
+    .hero-title { font-size: 50px; }
+    .hero-subtext { font-size: 16px; }
+    .pin-narrative-section { min-height: 200vh; }
+    .pin-text { font-size: 20px; }
+    .animated-object { display: none; } /* Скрываем сложную анимацию на моб */
+    .services-grid { grid-template-columns: 1fr; }
+}
