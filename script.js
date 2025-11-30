@@ -1,173 +1,152 @@
-// GSAP Plugins Registration
-gsap.registerPlugin(ScrollTrigger);
-
-// 1. LENIS - Инициализация инерционного скроллинга
+// --- 1. SETUP LENIS (Плавный скролл) ---
 const lenis = new Lenis({
     duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Более плавный ease
-    direction: 'vertical',
-    smoothTouch: false, // Отключаем на тач-устройствах для лучшей производительности
+    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    smooth: true,
 });
-
 function raf(time) {
     lenis.raf(time);
     requestAnimationFrame(raf);
 }
 requestAnimationFrame(raf);
 
-// 2. PRELOADER - Фикс и Анимация загрузки
-function initPreloader() {
-    lenis.stop(); // Останавливаем скролл на время загрузки
-    const tl = gsap.timeline({
-        onComplete: () => {
-            document.querySelector('.preloader').style.display = 'none';
-            lenis.start(); // Запускаем скролл после загрузки
-            initHeroAnimation(); // Запускаем анимацию HERO
-            initScrollAnimations(); // Запускаем анимации при прокрутке
-        }
-    });
+// --- 2. GSAP REGISTRATION ---
+gsap.registerPlugin(ScrollTrigger);
 
-    // Анимация текста
-    tl.to(".loader-text span", {
-        y: "0%",
-        duration: 0.8,
-        stagger: 0.05,
-        ease: "power3.out"
-    })
-    .to(".loader-text span", {
-        y: "-100%",
-        duration: 0.8,
-        stagger: 0.05,
-        ease: "power3.in",
-        delay: 0.5
-    })
-    // Исчезновение прелоадера
-    .to(".preloader", {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power1.in"
-    });
+// --- 3. CUSTOM CURSOR ---
+const cursorDot = document.querySelector('.cursor-dot');
+const cursorOutline = document.querySelector('.cursor-outline');
+
+window.addEventListener('mousemove', (e) => {
+    const posX = e.clientX;
+    const posY = e.clientY;
+
+    // Dot следует мгновенно
+    cursorDot.style.left = `${posX}px`;
+    cursorDot.style.top = `${posY}px`;
+
+    // Outline с задержкой (эффект желе)
+    cursorOutline.animate({
+        left: `${posX}px`,
+        top: `${posY}px`
+    }, { duration: 500, fill: "forwards" });
+});
+
+// --- 4. ANIMATED BACKGROUND (CANVAS BLOB) ---
+const canvas = document.getElementById('liquid-canvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+
+// Настройка размера
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
 }
-window.onload = initPreloader;
+window.addEventListener('resize', resize);
+resize();
 
+// Параметры "капель"
+const blobs = [
+    { x: width * 0.2, y: height * 0.3, r: 150, dx: 1, dy: 1, color: 'rgba(255, 51, 0, 0.4)' },
+    { x: width * 0.8, y: height * 0.7, r: 200, dx: -1.5, dy: -1, color: 'rgba(255, 51, 0, 0.2)' },
+    { x: width * 0.5, y: height * 0.5, r: 180, dx: 0.5, dy: -1.5, color: 'rgba(100, 100, 255, 0.1)' }
+];
 
-// 3. HERO АНИМАЦИЯ (Отдельная функция, запускается после прелоадера)
-function initHeroAnimation() {
-    // Анимация заголовка (вылет по строкам)
-    gsap.to(".hero-title .line-reveal span", {
-        y: "0%",
-        duration: 1.5,
-        stagger: 0.15,
-        ease: "power4.out"
-    });
-
-    // Анимация субтекста
-    gsap.from(".hero-subtext", {
-        y: 20,
-        opacity: 0,
-        duration: 1,
-        ease: "power2.out",
-        delay: 0.5
-    });
+function drawBlobs() {
+    ctx.clearRect(0, 0, width, height);
     
-    // Mouse Parallax Effect (для анимированного объекта)
-    document.addEventListener("mousemove", (e) => {
-        const shape = document.querySelector('.placeholder-shape');
-        if (shape) {
-            const x = (e.clientX / window.innerWidth - 0.5) * 40; // max 40px move
-            const y = (e.clientY / window.innerHeight - 0.5) * 40;
-            gsap.to(shape, {
-                x: -x,
-                y: -y,
-                rotation: x / 5,
-                duration: 0.5,
-                ease: "power2.out"
-            });
-        }
+    // Эффект размытия для слияния
+    ctx.filter = 'blur(60px)';
+    
+    blobs.forEach(blob => {
+        ctx.beginPath();
+        ctx.arc(blob.x, blob.y, blob.r, 0, Math.PI * 2);
+        ctx.fillStyle = blob.color;
+        ctx.fill();
+        
+        // Движение
+        blob.x += blob.dx;
+        blob.y += blob.dy;
+        
+        // Отскок от стен
+        if (blob.x < 0 || blob.x > width) blob.dx *= -1;
+        if (blob.y < 0 || blob.y > height) blob.dy *= -1;
     });
+
+    requestAnimationFrame(drawBlobs);
 }
+drawBlobs();
 
-// 4. SCROLLTRIGGER АНИМАЦИИ (Самый сложный эффект)
-function initScrollAnimations() {
+// --- 5. PRELOADER & HERO REVEAL ---
+const tlLoader = gsap.timeline();
 
-    // Эффект PINNED NARRATIVE (как Refokus/Obys)
-    const pinTextElements = document.querySelectorAll('.pin-text');
-    const narrativeSection = document.querySelector('.pin-narrative-section');
+// Симуляция загрузки
+let progress = 0;
+const counterElement = document.querySelector('.counter');
+const interval = setInterval(() => {
+    progress += Math.floor(Math.random() * 10) + 1;
+    if (progress > 100) progress = 100;
+    counterElement.innerText = `${progress}%`;
+    if (progress === 100) clearInterval(interval);
+}, 30);
 
+// Анимация после загрузки страницы
+window.onload = () => {
+    setTimeout(() => {
+        tlLoader
+            .to('.preloader-text', { opacity: 0, duration: 0.5 })
+            .to('.counter', { opacity: 0, duration: 0.5 }, "<")
+            .to('.preloader', { y: "-100%", duration: 1.2, ease: "power4.inOut" })
+            .from('.hero-title .line span', {
+                y: "100%",
+                duration: 1.5,
+                stagger: 0.1,
+                ease: "power4.out"
+            }, "-=0.5")
+            .from('.header', { opacity: 0, y: -20, duration: 1 }, "-=1");
+    }, 1500); // Небольшая задержка чтобы увидеть 100%
+};
+
+// --- 6. SCROLL ANIMATIONS ---
+
+// Pinning Philosophy Section
+const items = document.querySelectorAll('.ph-item');
+items.forEach((item, index) => {
     ScrollTrigger.create({
-        trigger: narrativeSection,
-        start: "top top",
-        end: "bottom bottom", // Прикрепляем секцию на всю ее высоту
-        pin: true,
-        scrub: 1,
-        // markers: true, // Раскомментируй для дебага
+        trigger: item,
+        start: "top center",
+        end: "bottom center",
+        onEnter: () => item.classList.add('active'),
+        onLeave: () => item.classList.remove('active'),
+        onEnterBack: () => item.classList.add('active'),
+        onLeaveBack: () => item.classList.remove('active')
     });
+});
 
-    // Анимация текста при прокрутке
-    pinTextElements.forEach((text, index) => {
-        const startPoint = (index * 100) + 10;
-        const endPoint = startPoint + 80;
+// Work Images Hover Effect (для курсора)
+const workItems = document.querySelectorAll('.work-item');
+workItems.forEach(item => {
+    item.addEventListener('mouseenter', () => {
+        cursorOutline.style.width = '80px';
+        cursorOutline.style.height = '80px';
+        cursorOutline.style.borderColor = '#FF3300';
+    });
+    item.addEventListener('mouseleave', () => {
+        cursorOutline.style.width = '40px';
+        cursorOutline.style.height = '40px';
+        cursorOutline.style.borderColor = 'rgba(255,255,255,0.3)';
+    });
+});
 
-        ScrollTrigger.create({
-            trigger: narrativeSection,
-            start: `${startPoint}px top`,
-            end: `${endPoint}px top`,
-            scrub: 1,
-            // markers: true, // Раскомментируй для дебага
-            onUpdate: (self) => {
-                // Если текст в фокусе, делаем его жирным и видимым
-                const progress = self.progress;
-                if (progress > 0 && progress < 1) {
-                    text.style.opacity = 1;
-                    text.style.color = 'var(--text-light)';
-                    text.style.transform = `scale(1.02)`;
-                } else if (progress >= 1) {
-                    text.style.opacity = 0.3;
-                    text.style.color = 'var(--text-muted)';
-                    text.style.transform = `scale(1)`;
-                } else {
-                    text.style.opacity = 0.1;
-                    text.style.color = 'var(--text-muted)';
-                    text.style.transform = `scale(1)`;
-                }
-            }
-        });
-    });
-
-    // Общая анимация появления блоков
-    gsap.utils.toArray('.service-card').forEach((card, i) => {
-        gsap.from(card, {
-            y: 50,
-            opacity: 0,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: card,
-                start: "top 90%",
-                toggleActions: "play none none reverse",
-            }
-        });
-    });
-
-    // Анимация финального CTA
-    gsap.from(".cta-line-1", {
-        x: -200,
-        opacity: 0,
-        scrollTrigger: {
-            trigger: ".final-cta",
-            start: "top 80%",
-            end: "top 50%",
-            scrub: 1,
-        }
-    });
-    gsap.from(".cta-line-2", {
-        x: 200,
-        opacity: 0,
-        scrollTrigger: {
-            trigger: ".final-cta",
-            start: "top 80%",
-            end: "top 50%",
-            scrub: 1,
-        }
-    });
-}
+// CTA Reveal
+gsap.from(".cta-title span", {
+    scrollTrigger: {
+        trigger: ".cta",
+        start: "top 70%",
+    },
+    y: 100,
+    opacity: 0,
+    duration: 1,
+    stagger: 0.2,
+    ease: "power3.out"
+});
