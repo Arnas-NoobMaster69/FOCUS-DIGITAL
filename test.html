@@ -13,8 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+    
     <style>
         :root {
             --bg-dark: #0d1117;
@@ -31,9 +30,10 @@
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 3D Container */
+        /* Canvas Container for New Animation */
         #canvas-container {
             position: fixed;
             top: 0;
@@ -65,11 +65,12 @@
             background: rgba(22, 27, 34, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid var(--border);
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .glass:hover {
             border-color: #58a6ff;
             transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         /* Custom Button */
@@ -89,7 +90,7 @@
         .btn-glow:hover::after { left: 100%; }
         .btn-glow:hover { box-shadow: 0 0 30px var(--accent-glow); }
 
-        /* Mobile Fixes */
+        /* General Z-Index Fix */
         section { position: relative; z-index: 10; }
         
         /* Grid Background Pattern */
@@ -103,12 +104,28 @@
             z-index: -2;
             pointer-events: none;
         }
+
+        /* Fix for Image Stretching */
+        .case-image-container {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 1rem; /* rounded-2xl */
+        }
+        .case-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the container without stretching */
+            position: absolute;
+            top: 0;
+            left: 0;
+            /* No more h-[120%] or parallax-img class in CSS */
+        }
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="canvas-container"></div>
-    <div class="grid-bg"></div>
+    <canvas id="canvas-container"></canvas> <div class="grid-bg"></div>
 
     <header class="fixed top-0 w-full z-50 border-b border-[#30363d] bg-[#0d1117]/80 backdrop-blur-xl">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -131,10 +148,7 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
             </a>
             
-            <button class="md:hidden text-white">
-                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-            </button>
-        </div>
+            </div>
     </header>
 
     <main>
@@ -144,7 +158,7 @@
             <div class="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center relative z-10">
                 <div class="hero-content">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#30363d] bg-[#161b22]/50 mb-8 backdrop-blur-md">
-                        <span class="text-xs font-mono text-[#FF5C00] tracking-wider">SYSTEM v2.4 ONLINE</span>
+                        <span class="text-xs font-mono text-[#FF5C00] tracking-wider">SYSTEM v2.5 ONLINE (OPTIMIZED)</span>
                     </div>
                     
                     <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight mb-8">
@@ -197,7 +211,7 @@
                     <div class="grid gap-6">
                         <div class="glass p-8 rounded-2xl relative overflow-hidden group">
                             <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-50 transition-opacity text-[#FF5C00]">
-                                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6z"/><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                             </div>
                             <div class="text-5xl md:text-6xl font-bold text-white mb-2 counter" data-target="12">0</div>
                             <div class="text-sm font-mono text-[#7d8590] uppercase tracking-wider">Млн $ выручки клиентам</div>
@@ -221,7 +235,7 @@
             </div>
         </section>
 
-               <section id="solutions" class="py-24 relative z-10">
+        <section id="solutions" class="py-24 relative z-10">
             <div class="max-w-7xl mx-auto px-6">
                 <div class="mb-16">
                     <span class="text-[#FF5C00] font-mono text-sm tracking-widest uppercase">Инструментарий</span>
@@ -302,10 +316,10 @@
 
                 <div class="space-y-32">
                     <div class="group grid md:grid-cols-12 gap-8 items-center">
-                        <div class="md:col-span-7 relative h-[400px] rounded-2xl overflow-hidden border border-[#30363d]">
+                        <div class="md:col-span-7 relative case-image-container rounded-2xl overflow-hidden border border-[#30363d]">
                             <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=1632&auto=format&fit=crop" 
                                  alt="Case 1" 
-                                 class="parallax-img w-full h-[120%] object-cover absolute top-0 left-0 transition-transform duration-700 grayscale group-hover:grayscale-0">
+                                 class="transition-transform duration-700 grayscale group-hover:grayscale-0">
                             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
                         </div>
                         <div class="md:col-span-5">
@@ -347,10 +361,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="md:col-span-7 order-1 md:order-2 relative h-[400px] rounded-2xl overflow-hidden border border-[#30363d]">
+                        <div class="md:col-span-7 order-1 md:order-2 relative case-image-container rounded-2xl overflow-hidden border border-[#30363d]">
                             <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070&auto=format&fit=crop" 
                                  alt="Case 2" 
-                                 class="parallax-img w-full h-[120%] object-cover absolute top-0 left-0 transition-transform duration-700 grayscale group-hover:grayscale-0">
+                                 class="transition-transform duration-700 grayscale group-hover:grayscale-0">
                              <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
                         </div>
                     </div>
@@ -446,107 +460,104 @@
                 </div>
             </div>
         </footer>
-
-
     </main>
 
     <script>
-        // --- 1. THREE.JS 3D GLOBE ENGINE (GitHub Style) ---
-        const init3D = () => {
-            const container = document.getElementById('canvas-container');
-            const scene = new THREE.Scene();
-            
-            // Camera setup
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 20; // Zoom level
+        // --- 1. LENIS SMOOTH SCROLL ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
 
-            // Renderer setup
-            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
 
-            // Create Globe (Points)
-            const geometry = new THREE.SphereGeometry(12, 64, 64);
-            const material = new THREE.PointsMaterial({
-                color: 0x30363d, // Dark grey initially
-                size: 0.15,
-                transparent: true,
-                opacity: 0.8
-            });
-            const globe = new THREE.Points(geometry, material);
-            scene.add(globe);
+        // --- 2. NEW CANVAS ANIMATION (Star Field / Network Effect) ---
+        const canvas = document.getElementById('canvas-container');
+        const ctx = canvas.getContext('2d');
+        let width, height;
 
-            // Add some "Active" Orange Dots
-            const activeGeometry = new THREE.BufferGeometry();
-            const activeCount = 150;
-            const activePositions = new Float32Array(activeCount * 3);
-            
-            for(let i=0; i<activeCount*3; i+=3) {
-                // Random points on sphere surface logic roughly
-                const r = 12.1;
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos(2 * Math.random() - 1);
-                
-                activePositions[i] = r * Math.sin(phi) * Math.cos(theta);
-                activePositions[i+1] = r * Math.sin(phi) * Math.sin(theta);
-                activePositions[i+2] = r * Math.cos(phi);
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const dots = [];
+        const DOT_COUNT = 70; 
+
+        class Dot {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                // Slower movement for better performance
+                this.vx = (Math.random() - 0.5) * 0.1; 
+                this.vy = (Math.random() - 0.5) * 0.1;
+                this.size = Math.random() * 2 + 0.5;
+                // Use muted tones and accent color
+                this.color = Math.random() > 0.9 ? '#FF5C00' : '#30363d';
             }
-            activeGeometry.setAttribute('position', new THREE.BufferAttribute(activePositions, 3));
-            const activeMaterial = new THREE.PointsMaterial({ color: 0xFF5C00, size: 0.25 });
-            const activeDots = new THREE.Points(activeGeometry, activeMaterial);
-            globe.add(activeDots);
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Keep dots within bounds (bouncing effect)
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
 
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
+        for (let i = 0; i < DOT_COUNT; i++) dots.push(new Dot());
 
-            // Mouse Interaction Variables
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetRotationX = 0;
-            let targetRotationY = 0;
-            const windowHalfX = window.innerWidth / 2;
-            const windowHalfY = window.innerHeight / 2;
-
-            document.addEventListener('mousemove', (event) => {
-                mouseX = (event.clientX - windowHalfX);
-                mouseY = (event.clientY - windowHalfY);
-            });
-
-            // Handle Resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            // Animation Loop
-            const animate = () => {
-                requestAnimationFrame(animate);
-
-                targetRotationY = mouseX * 0.001;
-                targetRotationX = mouseY * 0.001;
-
-                globe.rotation.y += 0.002; // Auto rotate
-                globe.rotation.y += 0.05 * (targetRotationY - globe.rotation.y);
-                globe.rotation.x += 0.05 * (targetRotationX - globe.rotation.x);
-
-                renderer.render(scene, camera);
-            };
-
-            animate();
-        };
-
-        // Initialize 3D only if on desktop/tablet to save battery on mobile, 
-        // OR optimize for mobile. Let's keep it but lightweight.
-        init3D();
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw connections (subtle network effect)
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.2)'; // Very subtle lines
+            ctx.lineWidth = 0.5;
+            
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].update();
+                dots[i].draw();
+                
+                for (let j = i; j < dots.length; j++) {
+                    const dx = dots[i].x - dots[j].x;
+                    const dy = dots[i].y - dots[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < 100) { // Limit connection distance for performance
+                        ctx.beginPath();
+                        ctx.moveTo(dots[i].x, dots[i].y);
+                        ctx.lineTo(dots[j].x, dots[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
 
 
-        // --- 2. GSAP ANIMATIONS ---
+        // --- 3. GSAP ANIMATIONS ---
         gsap.registerPlugin(ScrollTrigger);
 
-        // Intro Reveal
+        // Hero Reveal
         const tl = gsap.timeline();
         tl.from(".reveal-text", {
             y: 100,
@@ -568,34 +579,27 @@
                 snap: { innerHTML: 1 },
                 scrollTrigger: {
                     trigger: counter,
-                    start: "top 85%"
+                    start: "top 85%",
+                    once: true
                 }
             });
         });
 
-        // Smooth Scroll
-        const lenis = new Lenis();
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-        
-                // --- 3. PARALLAX EFFECT FOR CASES ---
-        gsap.utils.toArray(".parallax-img").forEach((img) => {
-            gsap.to(img, {
-                y: "20%", // Сдвигаем картинку вниз при скролле
-                ease: "none",
-                scrollTrigger: {
-                    trigger: img.parentElement,
-                    start: "top bottom", // Когда верх контейнера появляется снизу экрана
-                    end: "bottom top",   // Когда низ контейнера уходит вверх экрана
-                    scrub: true,         // Привязка к скроллу (smooth)
-                }
-            });
+        // Animation of Bento Cards
+        gsap.from("#solutions .glass", {
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out",
+            scrollTrigger: {
+                trigger: "#solutions",
+                start: "top 80%",
+                once: true
+            }
         });
 
-        // --- 4. INTERACTIVE TIMELINE (PROCESS) ---
+        // INTERACTIVE TIMELINE (PROCESS) - NO CHANGES NEEDED, IT'S PERFORMANT
         // Анимация линии
         gsap.to("#scroll-line", {
             height: "100%",
@@ -635,20 +639,6 @@
                 }
             });
         });
-        
-        // Анимация появления Bento Cards
-        gsap.from("#solutions .glass", {
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-                trigger: "#solutions",
-                start: "top 80%"
-            }
-        });
-
     </script>
 </body>
 </html>
