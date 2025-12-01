@@ -2,456 +2,508 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FOCUS.DIGITAL | Growth Performance</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOCUS DIGITAL | Growth Performance Agency</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <style>
-        /* --- 1. RESET & VARS --- */
-        :root {
-            --bg: #050505;
-            --text: #ffffff;
-            --text-gray: #888888;
-            --accent: #FF3B00; /* Ядреный оранжевый */
-            --accent-dark: #cc2f00;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-            --font-head: 'Oswald', sans-serif;
-            --font-body: 'Inter', sans-serif;
-            --container: 1400px;
-        }
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    <style>
+        /* --- CORE STYLES & GITHUB VIBE --- */
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --accent: #FF5C00;
+            --accent-glow: rgba(255, 92, 0, 0.4);
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+        }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            /* Убедимся, что скроллбар скрыт для Lenis */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE and Edge */
-        }
-        body::-webkit-scrollbar { width: 0; } /* Chrome, Safari, Opera */
-
-        a { text-decoration: none; color: inherit; }
-
-        /* Шум на фоне */
-        .noise {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.04; pointer-events: none; z-index: 999;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Контейнер WebGL */
-        #webgl {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
-            z-index: -1; 
-            /* Фикс для мобильных: убеждаемся, что он не перекрывает весь контент */
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
+
+        /* Background Grid (GitHub Style) */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -2;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
         }
 
-        /* --- 2. TYPOGRAPHY & UTILS --- */
-        .container {
-            max-width: var(--container); margin: 0 auto; padding: 0 20px;
+        /* Typography */
+        h1, h2, h3 { letter-spacing: -0.03em; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #999 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .glass {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        
+        .accent-gradient {
+            background: linear-gradient(135deg, #FF5C00 0%, #ff8e53 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .glass-card {
+            background: rgba(22, 27, 34, 0.6);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .accent-text { color: var(--accent); }
-
-        /* --- 3. PRELOADER --- */
-        .loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 10000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .loader-wrap { overflow: hidden; display: flex; gap: 10px; }
-        .loader-text {
-            font-family: var(--font-head); font-size: 40px; font-weight: 700;
-            transform: translateY(100%);
-        }
-        .loader-progress {
-            width: 0; height: 2px; background: var(--accent); margin-top: 20px;
+        
+        .glass-card:hover {
+            border-color: var(--text-secondary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
         }
 
-        /* --- 4. NAVIGATION --- */
-        .nav {
-            position: fixed; top: 0; left: 0; width: 100%; padding: 25px 0;
-            z-index: 100; mix-blend-mode: difference; transition: 0.3s;
-        }
-        .nav-container {
-            max-width: var(--container); margin: 0 auto; padding: 0 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .logo {
-            font-family: var(--font-head); font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
-        }
-        .dot { color: var(--accent); }
-
-        .nav-links { display: flex; gap: 40px; }
-        .nav-link {
-            text-transform: uppercase; font-size: 14px; letter-spacing: 1px;
-            position: relative; color: #fff; opacity: 0.7; transition: 0.3s;
-        }
-        .nav-link::after {
-            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px;
-            background: var(--accent); transition: 0.3s;
-        }
-        .nav-link:hover { opacity: 1; }
-        .nav-link:hover::after { width: 100%; }
-
-        .btn-small {
-            border: 1px solid rgba(255,255,255,0.3); padding: 10px 24px;
-            border-radius: 50px; font-size: 12px; text-transform: uppercase;
+        .glow-button {
+            position: relative;
+            background: var(--accent);
+            color: white;
             transition: 0.3s;
+            overflow: hidden;
+            z-index: 1;
         }
-        .btn-small:hover { background: #fff; color: #000; }
-
-        /* --- 5. HERO --- */
-        .hero { height: 100vh; display: flex; align-items: center; position: relative; }
-        .hero-content { width: 100%; padding-top: 60px; }
-
-        .label-box {
-            display: inline-flex; align-items: center; gap: 10px;
-            border: 1px solid var(--border); padding: 8px 16px; border-radius: 30px;
-            font-size: 12px; letter-spacing: 1px; margin-bottom: 30px;
-            background: rgba(0,0,0,0.3);
+        .glow-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+            z-index: -1;
         }
-        .status-dot { width: 6px; height: 6px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; }
-
-        .hero-title {
-            font-family: var(--font-head); font-size: clamp(48px, 8vw, 130px);
-            line-height: 0.9; text-transform: uppercase; font-weight: 700;
-        }
-        .line { overflow: hidden; display: block; }
-        .split-text { display: block; transform: translateY(100%); }
-
-        .hero-footer {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border);
-        }
-        .hero-desc { max-width: 400px; color: var(--text-gray); line-height: 1.5; font-size: 16px; }
-
-        .scroll-hint { font-size: 12px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .line-down { width: 1px; height: 40px; background: var(--accent); animation: scrollDown 2s infinite; }
-        @keyframes scrollDown { 0% { transform-origin: top; transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform-origin: bottom; transform: scaleY(0); } }
-
-        /* --- 6. TICKER --- */
-        .ticker-wrap {
-            padding: 30px 0; background: var(--accent); color: #000;
-            overflow: hidden; transform: rotate(-2deg) scale(1.05); margin: 50px 0;
-        }
-        .ticker { display: flex; white-space: nowrap; animation: ticker 20s linear infinite; }
-        .ticker-item { font-family: var(--font-head); font-size: 60px; font-weight: 700; margin-right: 40px; }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        /* --- 7. STATS (About) --- */
-        .stats-section { padding: 150px 0; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
-        .section-title {
-            font-family: var(--font-head); font-size: clamp(32px, 5vw, 60px);
-            line-height: 1; margin-bottom: 30px;
-        }
-        .section-desc { color: var(--text-gray); line-height: 1.6; margin-bottom: 40px; font-size: 18px; max-width: 500px; }
-        .btn-arrow { font-size: 18px; color: var(--accent); display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
-        .arrow { transition: 0.3s; }
-        .btn-arrow:hover .arrow { transform: translateX(10px); }
-
-        .stats-cards { display: flex; flex-direction: column; gap: 30px; }
-        .stat-card {
-            padding: 40px; border-radius: 0; position: relative;
-            display: flex; flex-direction: column; gap: 10px; transition: 0.4s;
-        }
-        .stat-card:hover { border-color: var(--accent); transform: translateX(-10px); }
-        .stat-num { font-family: var(--font-head); font-size: 60px; color: #fff; }
-        .stat-label { color: var(--text-gray); text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
-
-        /* --- 8. SYSTEM --- */
-        .system-section { padding: 100px 0; }
-        .center { text-align: center; }
-        .system-grid { margin-top: 80px; display: flex; flex-direction: column; }
-        .sys-item {
-            padding: 40px 0; position: relative; cursor: pointer; transition: 0.3s;
-        }
-        .sys-item:hover .sys-head h3 { color: var(--accent); padding-left: 20px; }
-        .sys-line {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
-            background: rgba(255,255,255,0.1);
-        }
-        .sys-head { display: flex; align-items: baseline; gap: 30px; }
-        .sys-num { color: var(--text-gray); font-family: var(--font-head); font-size: 20px; }
-        .sys-head h3 { font-size: clamp(24px, 4vw, 48px); transition: 0.3s; }
-        .sys-body {
-            max-height: 0; overflow: hidden; transition: 0.5s; opacity: 0;
-            margin-left: 60px; max-width: 600px; color: var(--text-gray);
-        }
-        .sys-item:hover .sys-body { max-height: 100px; opacity: 1; margin-top: 20px; }
-
-        /* --- 9. PARALLAX SEP --- */
-        .parallax-sep {
-            height: 60vh; display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden;
-            /* Временно добавим цвет, чтобы видеть, что секция загружена */
-            background-color: #101010; 
-        }
-        .parallax-content h2 {
-            font-family: var(--font-head); font-size: clamp(60px, 12vw, 200px);
-            line-height: 0.8; text-align: center; opacity: 0.2;
+        .glow-button:hover::before { left: 100%; }
+        .glow-button:hover {
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: scale(1.02);
         }
 
-        /* --- 10. CTA --- */
-        .cta-section { min-height: 80vh; display: flex; align-items: center; }
-        .center-col { display: flex; justify-content: center; width: 100%; }
-        .cta-wrapper {
-            padding: 60px; width: 100%; max-width: 800px; text-align: center;
-            border-radius: 20px;
+        /* Globe Canvas */
+        #globe-canvas {
+            position: absolute;
+            top: 0; right: 0;
+            width: 100%; height: 100vh;
+            z-index: -1;
+            opacity: 0.6;
         }
-        .cta-sub { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-size: 14px; display: block; margin-bottom: 20px; }
-        .cta-title { font-family: var(--font-head); font-size: clamp(30px, 4vw, 60px); margin-bottom: 40px; }
 
-        .contact-form { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
-        input {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            padding: 20px; color: #fff; font-family: var(--font-body); outline: none;
-            transition: 0.3s;
+        /* Timeline & Steps */
+        .step-line {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            z-index: 0;
         }
-        input:focus { border-color: var(--accent); background: rgba(0,0,0,0.5); }
-
-        .btn-main {
-            padding: 20px; border: none; background: var(--text); color: #000;
-            font-weight: 700; text-transform: uppercase; cursor: pointer;
-            position: relative; overflow: hidden; transition: 0.3s;
-        }
-        .btn-main:hover { color: #fff; background: var(--accent); }
-        .form-note { font-size: 12px; color: var(--text-gray); margin-top: 15px; }
-
-        /* --- 11. FOOTER --- */
-        footer { padding: 60px 0 20px 0; border-top: 1px solid var(--border); }
-        .footer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px; }
-        .footer-logo { font-family: var(--font-head); font-size: 30px; font-weight: 700; }
-        .socials { display: flex; flex-direction: column; gap: 10px; text-align: right; }
-        .socials a { color: var(--text-gray); font-size: 14px; transition: 0.3s; }
-        .socials a:hover { color: #fff; transform: translateX(-5px); }
-        .footer-bottom { display: flex; justify-content: space-between; font-size: 12px; color: #444; }
-
-        /* --- MOBILE --- */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .grid-2 { grid-template-columns: 1fr; }
-            .hero-footer { flex-direction: column; align-items: flex-start; gap: 30px; }
-            .hero-content { padding-top: 100px; }
-            .stats-cards { padding-left: 0; }
-        }
+        
+        /* Utility */
+        .reveal-text { overflow: hidden; }
     </style>
 </head>
-<body>
+<body class="antialiased selection:bg-orange-500 selection:text-white">
 
-    <div id="webgl"></div>
+    <div class="bg-grid"></div>
+    <canvas id="globe-canvas"></canvas>
 
-    <div class="noise"></div>
-
-    <div class="loader">
-        <div class="loader-wrap">
-            <span class="loader-text">FOCUS</span>
-            <span class="loader-text">DIGITAL</span>
-        </div>
-        <div class="loader-progress"></div>
-    </div>
-
-    <nav class="nav">
-        <div class="nav-container">
-            <div class="logo">FOCUS<span class="dot">.</span></div>
-            <div class="nav-links">
-                <a href="#about" class="nav-link">О нас</a>
-                <a href="#system" class="nav-link">Система</a>
-                <a href="#cases" class="nav-link">Результаты</a>
+    <header class="fixed top-0 w-full z-50 border-b border-[#30363d] bg-[#0d1117]/80 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="text-2xl font-bold tracking-tighter flex items-center gap-2">
+                <div class="w-3 h-3 bg-[#FF5C00] rounded-full animate-pulse"></div>
+                FOCUS<span class="text-[#8b949e]">DIGITAL</span>
             </div>
-            <a href="#contact" class="btn-small">Связаться</a>
-        </div>
-    </nav>
+            <nav class="hidden md:flex gap-8 text-sm font-medium text-[#8b949e]">
+                <a href="#about" class="hover:text-white transition-colors">Почему мы</a>
+                <a href="#services" class="hover:text-white transition-colors">Инструменты</a>
+                <a href="#cases" class="hover:text-white transition-colors">Кейсы</a>
+                <a href="#process" class="hover:text-white transition-colors">Процесс</a>
+            </nav>
+            <a href="#contact" class="hidden md:inline-flex items-center justify-center px-5 py-2 text-sm font-bold border border-[#30363d] rounded-full hover:border-white transition-all text-white bg-white/5">
+                Аудит проекта
+            </a>
+            </div>
+    </header>
 
-    <main id="main-content">
-
-        <section class="hero">
-            <div class="container">
+    <main>
+        <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0d1117]/50 to-[#0d1117] z-0 pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 relative z-10 w-full grid md:grid-cols-2 gap-12 items-center">
                 <div class="hero-content">
-                    <div class="label-box fade-in">
-                        <span class="status-dot"></span>
-                        ALMATY / PERFORMANCE AGENCY
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#30363d] bg-[#161b22] mb-8 text-xs font-mono text-[#FF5C00]">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                        </span>
+                        PERFORMANCE MARKETING V2.0
                     </div>
-                    <h1 class="hero-title">
-                        <div class="line"><span class="split-text">МЫ НЕ ИЩЕМ</span></div>
-                        <div class="line"><span class="split-text">КЛИЕНТОВ.</span></div>
-                        <div class="line"><span class="split-text accent-text">МЫ ИХ СОЗДАЕМ.</span></div>
+                    
+                    <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold leading-[1.1] mb-6 reveal-text">
+                        <div class="hero-line">Масштабируем</div>
+                        <div class="hero-line accent-gradient">Чистую Прибыль</div>
                     </h1>
-                    <div class="hero-footer fade-in">
-                        <p class="hero-desc">
-                            Превращаем холодный трафик в деньги. <br>
-                            Стратегический маркетинг без лишних слов.
-                        </p>
-                        <div class="scroll-hint">
-                            <span>SCROLL TO EXPLORE</span>
-                            <div class="line-down"></div>
+                    
+                    <p class="text-lg md:text-xl text-[#8b949e] max-w-lg mb-10 hero-desc leading-relaxed">
+                        Мы не «ведем соцсети». Мы строим системы продаж. Таргет, который окупается, и контент, который закрывает сделки.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 hero-btns">
+                        <a href="#contact" class="glow-button px-8 py-4 rounded-lg font-bold text-center">
+                            Получить Стратегию Роста
+                        </a>
+                        <a href="#cases" class="px-8 py-4 rounded-lg border border-[#30363d] text-center font-semibold hover:bg-[#30363d] transition-colors flex items-center justify-center gap-2 group">
+                            Смотреть цифры
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                    </div>
+
+                    <div class="mt-16 flex items-center gap-8 text-[#8b949e] text-sm font-mono opacity-60">
+                        <div>// ROI FOCUSED</div>
+                        <div>// DATA DRIVEN</div>
+                        <div>// FULL TRANSPARENCY</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-32 relative">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-5xl font-bold mb-8">Маркетинг изменился. <br><span class="text-[#8b949e]">Старые методы сжигают бюджет.</span></h2>
+                <p class="text-xl text-[#8b949e] mb-16 leading-relaxed">
+                    Красивые картинки больше не продают. В эпоху перенасыщения контентом выигрывает тот, кто работает с цифрами, воронками и психологией покупателя. Большинство агентств продают вам "процесс". Мы продаем <span class="text-white font-bold border-b border-[#FF5C00]">финансовый результат</span>.
+                </p>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card p-8 text-center" data-speed="0.9">
+                    <div class="text-5xl font-bold text-white mb-2 counter" data-target="450">0</div>
+                    <div class="text-sm font-mono text-[#8b949e]">СРЕДНИЙ РОСТ ROI %</div>
+                </div>
+                <div class="glass-card p-8 text-center" data-speed="1.1">
+                    <div class="text-5xl font-bold text-[#FF5C00] mb-2 counter" data-target="12">0</div>
+                    <div class="text-sm font-mono text-[#8b949e]">МЛН$ СГЕНЕРИРОВАНО КЛИЕНТАМ</div>
+                </div>
+                <div class="glass-card p-8 text-center" data-speed="1.0">
+                    <div class="text-5xl font-bold text-white mb-2 counter" data-target="58">0</div>
+                    <div class="text-sm font-mono text-[#8b949e]">УСПЕШНЫХ НИШ</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="py-32 bg-[#0d1117] relative border-t border-[#30363d]">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16">
+                    <div>
+                        <span class="text-[#FF5C00] font-mono text-sm tracking-widest uppercase">Наш Арсенал</span>
+                        <h2 class="text-4xl md:text-6xl font-bold mt-4">Экосистема Роста</h2>
+                    </div>
+                    <p class="text-[#8b949e] max-w-sm mt-6 md:mt-0 text-right">
+                        Комплекс инструментов для доминации на рынке. Используем только то, что влияет на выручку.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-[600px]">
+                    <div class="glass-card md:col-span-2 md:row-span-2 p-8 flex flex-col justify-between group relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-[#FF5C00] opacity-5 blur-[80px] rounded-full group-hover:opacity-10 transition-opacity"></div>
+                        <div class="z-10">
+                            <div class="w-12 h-12 bg-white/5 rounded-lg flex items-center justify-center mb-6 text-[#FF5C00]">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m22 2-7.58 7.58"/><path d="M12 2v10"/><path d="M12 12 2 22"/></svg>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-3">Target Ads & Retargeting</h3>
+                            <p class="text-[#8b949e]">Глубокая сегментация аудитории. Работаем не по интересам, а по поведенческим факторам. Снижаем цену лида за счет постоянных A/B тестов креативов.</p>
+                        </div>
+                        <ul class="mt-8 space-y-2 text-sm text-gray-400 font-mono">
+                            <li class="flex items-center gap-2"><div class="w-1 h-1 bg-[#FF5C00]"></div>Facebook / Instagram Ads</li>
+                            <li class="flex items-center gap-2"><div class="w-1 h-1 bg-[#FF5C00]"></div>Динамический ретаргетинг</li>
+                            <li class="flex items-center gap-2"><div class="w-1 h-1 bg-[#FF5C00]"></div>Создание автоворонок</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card md:col-span-2 p-8 flex flex-col justify-center group">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 class="text-xl font-bold mb-2">Visual & Content Strategy</h3>
+                                <p class="text-sm text-[#8b949e]">Упаковка, вызывающая доверие. Смыслы, которые продают без навязывания.</p>
+                            </div>
+                            <svg class="w-8 h-8 text-[#FF5C00] group-hover:rotate-12 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="glass-card md:col-span-1 p-6 flex flex-col justify-end group">
+                        <h3 class="text-lg font-bold mb-1">End-to-End Analytics</h3>
+                        <p class="text-xs text-[#8b949e]">CRM, Roistat, Pixel. Считаем каждый цент.</p>
+                        <div class="mt-4 h-1 bg-[#30363d] rounded overflow-hidden">
+                            <div class="h-full bg-[#FF5C00] w-3/4 group-hover:w-full transition-all duration-1000"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card md:col-span-1 p-6 flex flex-col justify-end">
+                        <h3 class="text-lg font-bold mb-1">Reels & Production</h3>
+                        <p class="text-xs text-[#8b949e]">Вирусные ролики и профессиональная съемка.</p>
+                        <div class="mt-4 flex gap-1">
+                             <div class="w-2 h-2 bg-[#FF5C00] rounded-full animate-bounce"></div>
+                             <div class="w-2 h-2 bg-[#FF5C00] rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                             <div class="w-2 h-2 bg-[#FF5C00] rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <div class="ticker-wrap">
-            <div class="ticker">
-                <span class="ticker-item">ROI FOCUSED —</span>
-                <span class="ticker-item">DATA DRIVEN —</span>
-                <span class="ticker-item">NO BULLSHIT —</span>
-                <span class="ticker-item">PERFORMANCE MARKETING —</span>
-                <span class="ticker-item">ROI FOCUSED —</span>
-                <span class="ticker-item">DATA DRIVEN —</span>
-                <span class="ticker-item">NO BULLSHIT —</span>
-                <span class="ticker-item">PERFORMANCE MARKETING —</span>
+        <section id="cases" class="py-32 relative overflow-hidden">
+            <div class="absolute left-0 top-20 w-full h-full bg-[radial-gradient(ellipse_at_left,_var(--tw-gradient-stops))] from-blue-900/10 via-transparent to-transparent"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 mb-20">
+                <span class="text-[#FF5C00] font-mono text-sm tracking-widest uppercase">Портфолио</span>
+                <h2 class="text-4xl md:text-6xl font-bold mt-4">Цифры говорят громче</h2>
             </div>
-        </div>
 
-        <section class="stats-section" id="about">
-            <div class="container grid-2">
-                <div class="stats-text sticky-col">
-                    <h2 class="section-title">ВАШ БЮДЖЕТ <br> СГОРАЕТ ВПУСТУЮ?</h2>
-                    <p class="section-desc">
-                        90% бизнесов в Алматы сливают деньги на SMM, потому что гонятся за лайками, а не за продажами. Мы меняем правила игры.
+            <div class="max-w-7xl mx-auto px-6 space-y-24">
+                
+                <div class="case-item grid md:grid-cols-2 gap-12 items-center group">
+                    <div class="order-2 md:order-1 relative rounded-2xl overflow-hidden border border-[#30363d] aspect-video">
+                        <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1632&q=80" alt="Case Study 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale group-hover:grayscale-0">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <div class="order-1 md:order-2">
+                        <div class="flex gap-3 mb-6">
+                            <span class="px-3 py-1 bg-[#161b22] border border-[#30363d] rounded text-xs text-white">E-COMMERCE</span>
+                            <span class="px-3 py-1 bg-[#161b22] border border-[#30363d] rounded text-xs text-white">TARGET</span>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4">Магазин электроники Oryx</h3>
+                        <p class="text-[#8b949e] mb-8">Сложная ниша с высокой конкуренцией. Задача: масштабировать продажи через Instagram, не увеличивая CPO (Cost Per Order).</p>
+                        
+                        <div class="grid grid-cols-2 gap-6 border-t border-[#30363d] pt-8">
+                            <div>
+                                <div class="text-3xl font-bold text-white">+460%</div>
+                                <div class="text-xs text-[#8b949e] uppercase mt-1">Рост выручки</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold text-[#FF5C00]">$0.3</div>
+                                <div class="text-xs text-[#8b949e] uppercase mt-1">Стоимость лида</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-item grid md:grid-cols-2 gap-12 items-center group">
+                    <div class="order-2 md:order-2 relative rounded-2xl overflow-hidden border border-[#30363d] aspect-video">
+                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Case Study 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale group-hover:grayscale-0">
+                         <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <div class="order-1 md:order-1">
+                        <div class="flex gap-3 mb-6">
+                            <span class="px-3 py-1 bg-[#161b22] border border-[#30363d] rounded text-xs text-white">OFFLINE RETAIL</span>
+                            <span class="px-3 py-1 bg-[#161b22] border border-[#30363d] rounded text-xs text-white">BRANDING</span>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-4">Jalan Jalan Japan</h3>
+                        <p class="text-[#8b949e] mb-8">Запуск новой точки. Необходимо было создать ажиотаж перед открытием и собрать базу лояльных клиентов.</p>
+                        
+                        <div class="grid grid-cols-2 gap-6 border-t border-[#30363d] pt-8">
+                            <div>
+                                <div class="text-3xl font-bold text-white">2,300+</div>
+                                <div class="text-xs text-[#8b949e] uppercase mt-1">Новых подписчиков</div>
+                            </div>
+                            <div>
+                                <div class="text-3xl font-bold text-[#FF5C00]">x3</div>
+                                <div class="text-xs text-[#8b949e] uppercase mt-1">Посещаемость в день открытия</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="process" class="py-32 bg-[#0d1117] border-t border-[#30363d]">
+            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-16">
+                <div class="sticky top-32 h-fit">
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6">Прозрачный путь <br>к результату</h2>
+                    <p class="text-[#8b949e] mb-8">
+                        Мы убрали хаос из уравнения. Каждый шаг оцифрован, каждый дедлайн зафиксирован в договоре. Вы всегда знаете, за что платите.
                     </p>
-                    <a href="#contact" class="btn-arrow">
-                        Заказать Аудит <span class="arrow">→</span>
+                    <a href="#contact" class="hidden md:inline-flex items-center gap-2 text-[#FF5C00] font-bold hover:gap-4 transition-all">
+                        Обсудить проект <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
                 </div>
-                <div class="stats-cards">
-                    <div class="stat-card glass" data-speed="0.9">
-                        <span class="stat-num">+300%</span>
-                        <span class="stat-label">Средний рост ROI клиентов</span>
+
+                <div class="relative pl-12 space-y-20">
+                    <div class="step-line"></div>
+                    
+                    <div class="relative step-card opacity-50" data-step="1">
+                        <div class="absolute -left-[59px] top-0 w-6 h-6 rounded-full bg-[#0d1117] border-2 border-[#FF5C00] z-10 flex items-center justify-center">
+                            <div class="w-2 h-2 bg-[#FF5C00] rounded-full"></div>
+                        </div>
+                        <span class="text-xs font-mono text-[#FF5C00] mb-2 block">01 / АНАЛИЗ</span>
+                        <h3 class="text-2xl font-bold text-white mb-3">Глубокий аудит</h3>
+                        <p class="text-[#8b949e]">Анализируем конкурентов, ваш продукт и текущие показатели. Находим "дыры", через которые утекает бюджет.</p>
                     </div>
-                    <div class="stat-card glass" data-speed="1.1">
-                        <span class="stat-num">45mln</span>
-                        <span class="stat-label">Сгенерировано прибыли за 2024</span>
+
+                    <div class="relative step-card opacity-50" data-step="2">
+                        <div class="absolute -left-[59px] top-0 w-6 h-6 rounded-full bg-[#0d1117] border-2 border-[#30363d] z-10"></div>
+                        <span class="text-xs font-mono text-[#8b949e] mb-2 block">02 / ПОДГОТОВКА</span>
+                        <h3 class="text-2xl font-bold text-white mb-3">Стратегия и Упаковка</h3>
+                        <p class="text-[#8b949e]">Разрабатываем медиа-план, создаем продающие офферы и готовим профили/сайты к приему трафика. </p>
                     </div>
-                    <div class="stat-card glass" data-speed="1.0">
-                        <span class="stat-num">0%</span>
-                        <span class="stat-label">Пустых обещаний</span>
+
+                    <div class="relative step-card opacity-50" data-step="3">
+                        <div class="absolute -left-[59px] top-0 w-6 h-6 rounded-full bg-[#0d1117] border-2 border-[#30363d] z-10"></div>
+                        <span class="text-xs font-mono text-[#8b949e] mb-2 block">03 / ТРАФИК</span>
+                        <h3 class="text-2xl font-bold text-white mb-3">Запуск и Тесты</h3>
+                        <p class="text-[#8b949e]">Запускаем рекламные кампании. Первые 7 дней — активные тесты для поиска лучшей связки "Креатив - Аудитория".</p>
+                    </div>
+
+                    <div class="relative step-card opacity-50" data-step="4">
+                        <div class="absolute -left-[59px] top-0 w-6 h-6 rounded-full bg-[#0d1117] border-2 border-[#30363d] z-10"></div>
+                        <span class="text-xs font-mono text-[#8b949e] mb-2 block">04 / МАСШТАБИРОВАНИЕ</span>
+                        <h3 class="text-2xl font-bold text-white mb-3">Оптимизация и Profit</h3>
+                        <p class="text-[#8b949e]">Отключаем нерабочее, заливаем бюджет в прибыльные связки. Внедряем сквозную аналитику.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="system-section" id="system">
-            <div class="container">
-                <h2 class="section-title center">НАША ЭКОСИСТЕМА</h2>
-                <div class="system-grid">
-                    <div class="sys-item">
-                        <div class="sys-head">
-                            <span class="sys-num">01</span>
-                            <h3>АНАЛИТИКА</h3>
-                        </div>
-                        <div class="sys-body">
-                            <p>Мы не гадаем. Мы внедряем сквозную аналитику и CRM, чтобы видеть стоимость каждого лида.</p>
-                        </div>
-                        <div class="sys-line"></div>
+        <section class="py-24 border-t border-[#30363d]">
+            <div class="max-w-5xl mx-auto px-6">
+                <h2 class="text-3xl font-bold mb-12 text-center">Почему выбирают нас</h2>
+                
+                <div class="border border-[#30363d] rounded-xl overflow-hidden">
+                    <div class="grid grid-cols-3 bg-[#161b22] p-4 text-sm font-bold border-b border-[#30363d]">
+                        <div class="text-[#8b949e]">Критерий</div>
+                        <div class="text-[#8b949e] text-center">Фрилансеры / Обычные агентства</div>
+                        <div class="text-[#FF5C00] text-center">FOCUS DIGITAL</div>
                     </div>
-                    <div class="sys-item">
-                        <div class="sys-head">
-                            <span class="sys-num">02</span>
-                            <h3>ТРАФИК (ADS)</h3>
-                        </div>
-                        <div class="sys-body">
-                            <p>Точечный таргетинг в Instagram, TikTok, Facebook. Мы находим тех, кто готов платить.</p>
-                        </div>
-                        <div class="sys-line"></div>
+                    
+                    <div class="grid grid-cols-3 p-6 border-b border-[#30363d] hover:bg-white/5 transition-colors">
+                        <div class="font-bold">Цель работы</div>
+                        <div class="text-sm text-[#8b949e] text-center">Потратить бюджет, получить клики</div>
+                        <div class="text-sm text-white text-center font-bold">Получить заявки и продажи (ROI)</div>
                     </div>
-                    <div class="sys-item">
-                        <div class="sys-head">
-                            <span class="sys-num">03</span>
-                            <h3>УПАКОВКА</h3>
-                        </div>
-                        <div class="sys-body">
-                            <p>Смыслы, офферы и дизайн. Мы делаем так, чтобы ваш бренд выглядел дороже конкурентов.</p>
-                        </div>
-                        <div class="sys-line"></div>
+                    <div class="grid grid-cols-3 p-6 border-b border-[#30363d] hover:bg-white/5 transition-colors">
+                        <div class="font-bold">Отчетность</div>
+                        <div class="text-sm text-[#8b949e] text-center">Скриншоты раз в месяц</div>
+                        <div class="text-sm text-white text-center font-bold">Live-отчет 24/7 и еженедельные созвоны</div>
                     </div>
-                    <div class="sys-item active-glow">
-                        <div class="sys-head">
-                            <span class="sys-num">04</span>
-                            <h3>ТЕХ. РЕШЕНИЯ</h3>
-                        </div>
-                        <div class="sys-body">
-                            <p>Собственный отдел разработки. Создаем воронки и посадочные страницы для максимизации конверсии.</p>
-                        </div>
-                        <div class="sys-line"></div>
+                    <div class="grid grid-cols-3 p-6 hover:bg-white/5 transition-colors">
+                        <div class="font-bold">Команда</div>
+                        <div class="text-sm text-[#8b949e] text-center">1 человек - "человек-оркестр"</div>
+                        <div class="text-sm text-white text-center font-bold">Проектная группа: Таргетолог, Маркетолог, Дизайнер</div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="parallax-sep">
-            <div class="parallax-content">
-                <h2>FOCUS ON <br> RESULTS</h2>
-            </div>
-        </section>
-
-        <section class="cta-section" id="contact">
-            <div class="container center-col">
-                <div class="cta-wrapper glass">
-                    <span class="cta-sub">Готовы масштабироваться?</span>
-                    <h2 class="cta-title">ДАВАЙТЕ ОБСУДИМ <br> ВАШИ ЦИФРЫ</h2>
-                    <form class="contact-form">
-                        <input type="text" placeholder="Ваше Имя" required>
-                        <input type="tel" placeholder="Номер Телефона" required>
-                        <button type="submit" class="btn-main">
-                            <span class="btn-text">Получить Стратегию</span>
-                            <span class="btn-bg"></span>
-                        </button>
-                    </form>
-                    <p class="form-note">Мы свяжемся в течение 15 минут.</p>
+        <section class="py-24">
+            <div class="max-w-3xl mx-auto px-6">
+                <h2 class="text-3xl font-bold mb-8">Частые вопросы</h2>
+                <div class="space-y-4">
+                    <details class="group glass-card p-6 cursor-pointer">
+                        <summary class="flex justify-between items-center font-bold list-none">
+                            Какой бюджет нужен для старта?
+                            <span class="transition group-open:rotate-180">
+                                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="text-[#8b949e] mt-4 text-sm">
+                            Минимальный рекомендуемый рекламный бюджет — от $500 в месяц. Это позволяет получить достаточно данных для тестов и первых продаж.
+                        </p>
+                    </details>
+                    <details class="group glass-card p-6 cursor-pointer">
+                        <summary class="flex justify-between items-center font-bold list-none">
+                            Когда будут первые результаты?
+                            <span class="transition group-open:rotate-180">
+                                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="text-[#8b949e] mt-4 text-sm">
+                            Первые заявки часто приходят в первые 48 часов после запуска. Стабильный прогнозируемый результат формируется ко 2-му месяцу работы после оптимизации.
+                        </p>
+                    </details>
+                    <details class="group glass-card p-6 cursor-pointer">
+                        <summary class="flex justify-between items-center font-bold list-none">
+                            Вы работаете с B2B?
+                            <span class="transition group-open:rotate-180">
+                                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="text-[#8b949e] mt-4 text-sm">
+                            Да, у нас есть успешные кейсы в строительстве, оптовых продажах и консалтинге. Подход отличается, но принципы лидгена остаются теми же.
+                        </p>
+                    </details>
                 </div>
             </div>
         </section>
 
-        <footer>
-            <div class="container">
-                <div class="footer-top">
-                    <div class="footer-logo">FOCUS.DIGITAL</div>
-                    <div class="socials">
-                        <a href="#">Instagram</a>
-                        <a href="#">WhatsApp</a>
-                        <a href="#">Telegram</a>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>© 2025 Focus Digital Almaty.</p>
-                    <p>All Rights Reserved.</p>
-                </div>
+        <section id="contact" class="py-32 relative text-center overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#FF5C00]/20 to-transparent pointer-events-none"></div>
+            
+            <div class="relative z-10 max-w-4xl mx-auto px-6">
+                <h2 class="text-5xl md:text-7xl font-bold mb-8 tracking-tighter">Готовы к росту?</h2>
+                <p class="text-xl text-[#8b949e] mb-12 max-w-2xl mx-auto">
+                    Разберем ваш проект на бесплатной стратегической сессии (15 мин). Найдем точки роста и рассчитаем прогноз.
+                </p>
+                
+                <a href="https://wa.me/7066377126?text=Здравствуйте,%20хочу%20обсудить%20проект." target="_blank" class="glow-button inline-flex items-center gap-3 px-10 py-5 rounded-xl text-lg font-bold">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.876 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+                    Написать в WhatsApp
+                </a>
             </div>
-        </footer>
-
+        </section>
     </main>
 
-    <script>
-        // --- 1. SETUP LIBRARIES ---
-        gsap.registerPlugin(ScrollTrigger);
+    <footer class="border-t border-[#30363d] py-12 bg-[#0d1117] text-center text-sm text-[#8b949e]">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                &copy; 2025 FOCUS DIGITAL. All rights reserved.
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition-colors">Instagram</a>
+                <a href="#" class="hover:text-white transition-colors">Telegram</a>
+            </div>
+        </div>
+    </footer>
 
-        // --- 2. SMOOTH SCROLL (LENIS) ---
+    <script>
+        // --- 1. LENIS SMOOTH SCROLL ---
         const lenis = new Lenis({
             duration: 1.2,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
             smooth: true,
-            mouseMultiplier: 0.6,
+            mouseMultiplier: 1,
             smoothTouch: false,
+            touchMultiplier: 2,
         });
 
         function raf(time) {
@@ -460,225 +512,166 @@
         }
         requestAnimationFrame(raf);
 
+        // --- 2. GSAP ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
 
-        // --- 3. PRELOADER & INITIAL ANIMATIONS ---
-        const tlLoader = gsap.timeline({
-            paused: true,
-            onComplete: () => {
-                document.querySelector('.loader').style.pointerEvents = 'none';
-                
-                // Hero Text Reveal (Kinetic Typography)
-                gsap.to('.split-text', {
-                    y: "0%",
-                    duration: 1.2,
-                    stagger: 0.15,
-                    ease: "power4.out",
-                });
-                
-                // Hero Footer Fade In
-                gsap.from('.fade-in', {
-                    opacity: 0,
-                    y: 20,
-                    duration: 1,
-                    ease: "power2.out",
-                    stagger: 0.15,
-                }, "-=0.8");
-            }
-        });
-
-        // Анимация текста в прелоадере
-        tlLoader.from('.loader-text', {
-            y: "100%",
-            stagger: 0.1,
-            duration: 1,
-            ease: "power3.out"
-        }, 0.2)
-        // Анимация прогресса
-        .to('.loader-progress', {
-            width: "100%",
-            duration: 1.5,
-            ease: "power2.inOut"
-        }, 0)
-        // Убираем прелоадер
-        .to('.loader', {
-            y: "-100%",
-            duration: 1,
-            ease: "power3.inOut"
-        }, 1.5);
-
-        // Имитация загрузки для запуска анимации
-        setTimeout(() => {
-            tlLoader.play();
-        }, 500);
-
-
-        // --- 4. GSAP SCROLL TRIGGERS ---
-
-        // Parallax/Scale effect on the Separator
-        gsap.to(".parallax-sep", {
-            scrollTrigger: {
-                trigger: ".parallax-sep",
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 0.5,
-            },
+        // Hero Reveals
+        const heroTl = gsap.timeline();
+        heroTl.from(".hero-line", {
             y: 100,
-            scale: 1.1 
-        });
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.1,
+            ease: "power4.out"
+        })
+        .from(".hero-desc", {
+            y: 20,
+            opacity: 0,
+            duration: 1,
+            ease: "power2.out"
+        }, "-=0.8")
+        .from(".hero-btns", {
+            y: 20,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.out"
+        }, "-=0.6");
 
-
-        // Parallax on Stat Cards
-        gsap.utils.toArray('.stat-card').forEach(card => {
-            const speed = parseFloat(card.dataset.speed);
-            
-            gsap.from(card, {
-                y: 100 * (speed - 1),
-                opacity: 0,
-                scrollTrigger: {
-                    trigger: card,
-                    start: "top 95%", // Сделаем старт раньше для мобильных
-                    end: "bottom top",
-                    scrub: 1,
-                }
-            });
-        });
-
-        // Simple Fade-In for Section Titles
-        gsap.utils.toArray('.section-title').forEach(title => {
+        // General Section Reveals
+        gsap.utils.toArray('section h2, section h3').forEach(title => {
             gsap.from(title, {
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                ease: "power3.out",
                 scrollTrigger: {
                     trigger: title,
-                    start: "top 90%",
+                    start: "top 85%",
                     toggleActions: "play none none reverse"
+                },
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+        });
+
+        // Cards Stagger
+        gsap.from(".glass-card", {
+            scrollTrigger: {
+                trigger: "#services",
+                start: "top 70%"
+            },
+            y: 50,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "back.out(1.7)"
+        });
+
+        // Timeline Animation
+        gsap.utils.toArray('.step-card').forEach((step, i) => {
+            gsap.to(step, {
+                scrollTrigger: {
+                    trigger: step,
+                    start: "top 60%",
+                    end: "bottom 60%",
+                    toggleActions: "play reverse play reverse",
+                    onEnter: () => {
+                        step.classList.remove('opacity-50');
+                        step.querySelector('.w-6').style.borderColor = '#FF5C00';
+                        if(step.querySelector('.w-2')) step.querySelector('.w-2').style.backgroundColor = '#FF5C00';
+                    },
+                    onLeaveBack: () => {
+                        step.classList.add('opacity-50');
+                        step.querySelector('.w-6').style.borderColor = '#30363d';
+                    }
+                },
+                duration: 0.3
+            });
+        });
+
+        // Counter Animation
+        const counters = document.querySelectorAll('.counter');
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            gsap.to(counter, {
+                innerHTML: target,
+                duration: 2,
+                snap: { innerHTML: 1 },
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: counter,
+                    start: "top 85%",
+                    once: true
                 }
             });
         });
 
-        // --- 5. THREE.JS (DIGITAL TERRAIN / LANDSCAPE) ---
+        // --- 3. CANVAS BACKGROUND (Globe/Network Effect) ---
+        const canvas = document.getElementById('globe-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
 
-        const canvas = document.createElement('canvas');
-        document.getElementById('webgl').appendChild(canvas);
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ 
-            alpha: true, 
-            antialias: true,
-            canvas: canvas // Используем созданный canvas
-        });
+        const dots = [];
+        const DOT_COUNT = 50; // Keep performance high
 
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-        // Геометрия: Плоскость с высокой детализацией
-        const planeSize = 30;
-        const segments = 64; 
-        const geometry = new THREE.PlaneGeometry(planeSize, planeSize, segments, segments);
-
-        // Материал
-        const material = new THREE.MeshBasicMaterial({
-            color: 0xFF3B00, // Accent color
-            wireframe: true,
-            transparent: true,
-            opacity: 0.2
-        });
-
-        const mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.x = -Math.PI * 0.5; // Поворот, чтобы лежала горизонтально
-        scene.add(mesh);
-
-        // Камера
-        camera.position.z = 10;
-        camera.position.y = 5;
-        camera.rotation.x = -Math.PI * 0.1;
-
-        const clock = new THREE.Clock();
-        let mouseX = 0;
-        let mouseY = 0;
-
-        document.addEventListener('mousemove', (event) => {
-            mouseX = (event.clientX / window.innerWidth) - 0.5;
-            mouseY = (event.clientY / window.innerHeight) - 0.5;
-        });
-
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-
-            const elapsedTime = clock.getElapsedTime();
-            const positions = geometry.attributes.position.array;
-            
-            // Анимация вершин (Волны)
-            for (let i = 0; i < positions.length; i += 3) {
-                const x = positions[i];
-                const y = positions[i + 1];
-                
-                positions[i + 2] = (
-                    Math.sin(x * 0.5 + elapsedTime * 0.5) * 0.5 + 
-                    Math.cos(y * 0.5 + elapsedTime * 0.5) * 0.5
-                ) * 0.5; 
+        class Dot {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+                this.color = Math.random() > 0.8 ? '#FF5C00' : '#30363d';
             }
-            
-            geometry.attributes.position.needsUpdate = true;
-            
-            // Плавное следование камеры за мышью
-            const targetX = mouseX * 2;
-            const targetY = mouseY * 2;
-            
-            camera.position.x += (targetX - camera.position.x) * 0.02;
-            camera.position.y += (-targetY + 5 - camera.position.y) * 0.02;
-            
-            renderer.render(scene, camera);
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
-        animate3D();
+        for (let i = 0; i < DOT_COUNT; i++) dots.push(new Dot());
 
-        // Resize Handler
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-
-        // --- 6. MAGNETIC BUTTON (CTA) ---
-        const btn = document.querySelector('.btn-main');
-        if (btn) {
-            btn.addEventListener('mousemove', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw connections
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.3)';
+            ctx.lineWidth = 0.5;
+            
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].update();
+                dots[i].draw();
                 
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-
-                const maxMove = 20;
-                
-                const moveX = ((x - centerX) / centerX) * maxMove;
-                const moveY = ((y - centerY) / centerY) * maxMove;
-
-                gsap.to(btn, {
-                    x: moveX,
-                    y: moveY,
-                    scale: 1.05,
-                    duration: 0.3,
-                    ease: "Power2.out"
-                });
-            });
-
-            btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, {
-                    x: 0,
-                    y: 0,
-                    scale: 1,
-                    duration: 0.5,
-                    ease: "elastic.out(1, 0.5)"
-                });
-            });
+                for (let j = i; j < dots.length; j++) {
+                    const dx = dots[i].x - dots[j].x;
+                    const dy = dots[i].y - dots[j].y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(dots[i].x, dots[i].y);
+                        ctx.lineTo(dots[j].x, dots[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateCanvas);
         }
+        animateCanvas();
+
     </script>
 </body>
 </html>
