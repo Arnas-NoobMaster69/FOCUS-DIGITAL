@@ -1,11 +1,13 @@
-// --- 1. SETUP SMOOTH SCROLL (LENIS) ---
+// --- 1. SETUP LIBRARIES ---
+gsap.registerPlugin(ScrollTrigger);
+
+// --- 2. SMOOTH SCROLL (LENIS) ---
 const lenis = new Lenis({
     duration: 1.2,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     smooth: true,
-    mouseMultiplier: 1,
-    smoothTouch: false, // Важно для мобильных, чтобы не было "тягучести"
-    touchMultiplier: 2,
+    mouseMultiplier: 0.6, // Мягкий скролл
+    smoothTouch: false,
 });
 
 function raf(time) {
@@ -14,68 +16,183 @@ function raf(time) {
 }
 requestAnimationFrame(raf);
 
-// --- 2. THREE.JS BACKGROUND (Abstract Wireframe) ---
+
+// --- 3. PRELOADER & INITIAL ANIMATIONS ---
+const tlLoader = gsap.timeline({
+    paused: true,
+    onComplete: () => {
+        // Убираем прелоадер и запускаем анимации HERO
+        document.querySelector('.loader').style.pointerEvents = 'none';
+        
+        // Hero Text Reveal (Kinetic Typography)
+        gsap.to('.split-text', {
+            y: "0%",
+            duration: 1.2,
+            stagger: 0.15,
+            ease: "power4.out",
+        });
+        
+        // Hero Footer Fade In
+        gsap.from('.fade-in', {
+            opacity: 0,
+            y: 20,
+            duration: 1,
+            ease: "power2.out",
+            stagger: 0.15,
+        }, "-=0.8");
+    }
+});
+
+// Анимация текста в прелоадере
+tlLoader.from('.loader-text', {
+    y: "100%",
+    stagger: 0.1,
+    duration: 1,
+    ease: "power3.out"
+}, 0.2)
+// Анимация прогресса
+.to('.loader-progress', {
+    width: "100%",
+    duration: 1.5,
+    ease: "power2.inOut"
+}, 0)
+// Убираем прелоадер
+.to('.loader', {
+    y: "-100%",
+    duration: 1,
+    ease: "power3.inOut"
+}, 1.5);
+
+// Имитация загрузки для запуска анимации
+setTimeout(() => {
+    tlLoader.play();
+}, 500);
+
+
+// --- 4. GSAP SCROLL TRIGGERS ---
+
+// Parallax/Scale effect on the Separator
+gsap.to(".parallax-sep", {
+    scrollTrigger: {
+        trigger: ".parallax-sep",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 0.5,
+    },
+    y: 100, // Сдвиг для эффекта параллакса
+    scale: 1.1 // Небольшое увеличение для глубины
+});
+
+
+// Parallax on Stat Cards
+gsap.utils.toArray('.stat-card').forEach(card => {
+    const speed = parseFloat(card.dataset.speed);
+    
+    gsap.from(card, {
+        y: 100 * (speed - 1), // Сдвиг в зависимости от data-speed
+        opacity: 0,
+        scrollTrigger: {
+            trigger: card,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+        }
+    });
+});
+
+// Simple Fade-In for Section Titles
+gsap.utils.toArray('.section-title').forEach(title => {
+    gsap.from(title, {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+            trigger: title,
+            start: "top 90%",
+            toggleActions: "play none none reverse"
+        }
+    });
+});
+
+// --- 5. THREE.JS (DIGITAL TERRAIN / LANDSCAPE) ---
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+const renderer = new THREE.WebGLRenderer({ 
+    alpha: true, 
+    antialias: true,
+    canvas: document.getElementById('webgl').appendChild(document.createElement('canvas'))
+});
 
-// Оптимизация для ретины и мобилок (чтобы не лагало)
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.getElementById('canvas-container').appendChild(renderer.domElement);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-// Геометрия: Икосаэдр (сфера из треугольников)
-const geometry = new THREE.IcosahedronGeometry(2, 2); // Радиус 2, детализация 2
-const material = new THREE.MeshBasicMaterial({ 
-    color: 0x4d4dff, // Accent color
+// Геометрия: Плоскость с высокой детализацией
+const planeSize = 30;
+const segments = 64; 
+const geometry = new THREE.PlaneGeometry(planeSize, planeSize, segments, segments);
+
+// Материал: Базовый Mesh с Wireframe и неоновым цветом
+const material = new THREE.MeshBasicMaterial({
+    color: 0xFF4D00, // Accent color
     wireframe: true,
     transparent: true,
-    opacity: 0.3
+    opacity: 0.2
 });
-const sphere = new THREE.Mesh(geometry, material);
-scene.add(sphere);
 
-camera.position.z = 5;
+const mesh = new THREE.Mesh(geometry, material);
+mesh.rotation.x = -Math.PI * 0.5; // Поворот, чтобы лежала горизонтально
+scene.add(mesh);
 
-// Анимация вращения и искажения
+// Камера
+camera.position.z = 10;
+camera.position.y = 5;
+camera.rotation.x = -Math.PI * 0.1;
+
+const clock = new THREE.Clock();
 let mouseX = 0;
 let mouseY = 0;
-let targetX = 0;
-let targetY = 0;
-
-const windowHalfX = window.innerWidth / 2;
-const windowHalfY = window.innerHeight / 2;
 
 document.addEventListener('mousemove', (event) => {
-    mouseX = (event.clientX - windowHalfX);
-    mouseY = (event.clientY - windowHalfY);
+    // Нормализация координат мыши от -0.5 до 0.5
+    mouseX = (event.clientX / window.innerWidth) - 0.5;
+    mouseY = (event.clientY / window.innerHeight) - 0.5;
 });
 
-// Анимация 3D
-const clock = new THREE.Clock();
+function animate3D() {
+    requestAnimationFrame(animate3D);
 
-function animateThree() {
-    targetX = mouseX * 0.001;
-    targetY = mouseY * 0.001;
-
-    // Плавное следование за мышью
-    sphere.rotation.y += 0.05 * (targetX - sphere.rotation.y);
-    sphere.rotation.x += 0.05 * (targetY - sphere.rotation.x);
+    const elapsedTime = clock.getElapsedTime();
+    const positions = geometry.attributes.position.array;
     
-    // Постоянное вращение
-    sphere.rotation.z += 0.002;
-
-    // Пульсация (Scale)
-    const time = clock.getElapsedTime();
-    const scale = 1 + Math.sin(time) * 0.05;
-    sphere.scale.set(scale, scale, scale);
-
+    // Анимация вершин (Волны)
+    for (let i = 0; i < positions.length; i += 3) {
+        const x = positions[i];
+        const y = positions[i + 1];
+        
+        // Высота (Z-координата) = Волна времени + Небольшой шум
+        positions[i + 2] = (
+            Math.sin(x * 0.5 + elapsedTime * 0.5) * 0.5 + 
+            Math.cos(y * 0.5 + elapsedTime * 0.5) * 0.5
+        ) * 0.5; 
+    }
+    
+    geometry.attributes.position.needsUpdate = true;
+    
+    // Плавное следование камеры за мышью
+    const targetX = mouseX * 2;
+    const targetY = mouseY * 2;
+    
+    camera.position.x += (targetX - camera.position.x) * 0.02;
+    camera.position.y += (-targetY + 5 - camera.position.y) * 0.02;
+    
     renderer.render(scene, camera);
-    requestAnimationFrame(animateThree);
 }
-animateThree();
 
-// Ресайз окна
+animate3D();
+
+// Resize Handler
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -83,85 +200,38 @@ window.addEventListener('resize', () => {
 });
 
 
-// --- 3. GSAP ANIMATIONS ---
-gsap.registerPlugin(ScrollTrigger);
+// --- 6. MAGNETIC BUTTON (CTA) ---
+const btn = document.querySelector('.btn-main');
+if (btn) {
+    btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
 
-// Анимация появления текста в Hero
-const tlHero = gsap.timeline();
-tlHero.to('.hero-title .line span', {
-    y: "0%",
-    duration: 1.2,
-    stagger: 0.15,
-    ease: "power4.out",
-    delay: 0.2
-})
-.from('.hero-sub', {
-    opacity: 0,
-    y: 20,
-    duration: 1
-}, "-=0.5");
+        const maxMove = 20; // Максимальное смещение
+        
+        const moveX = ((x - centerX) / centerX) * maxMove;
+        const moveY = ((y - centerY) / centerY) * maxMove;
 
-// Горизонтальный скролл (ТОЛЬКО ДЛЯ ПК)
-// На мобильных CSS делает flex-direction: column, поэтому отключаем триггер там
-if (window.innerWidth > 768) {
-    const races = document.querySelector(".projects-track");
-    
-    function getScrollAmount() {
-        let racesWidth = races.scrollWidth;
-        return -(racesWidth - window.innerWidth);
-    }
-
-    const tween = gsap.to(races, {
-        x: getScrollAmount,
-        duration: 3,
-        ease: "none",
+        gsap.to(btn, {
+            x: moveX,
+            y: moveY,
+            scale: 1.05,
+            duration: 0.3,
+            ease: "Power2.out"
+        });
     });
 
-    ScrollTrigger.create({
-        trigger: ".horizontal-scroll-wrapper",
-        start: "top 20%",
-        end: () => `+=${getScrollAmount() * -1}`,
-        pin: true,
-        animation: tween,
-        scrub: 1,
-        invalidateOnRefresh: true,
-        // markers: true // Для отладки
+    btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, {
+            x: 0,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "elastic.out(1, 0.5)"
+        });
     });
 }
-
-// Анимация появления элементов при скролле
-gsap.utils.toArray('.service-item').forEach(item => {
-    gsap.from(item, {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        scrollTrigger: {
-            trigger: item,
-            start: "top 90%",
-            toggleActions: "play none none reverse"
-        }
-    });
-});
-
-// Магнитный курсор (простая реализация)
-const cursor = document.querySelector('.cursor');
-
-document.addEventListener('mousemove', (e) => {
-    gsap.to(cursor, {
-        x: e.clientX - 10,
-        y: e.clientY - 10,
-        duration: 0.1,
-        ease: "power2.out"
-    });
-});
-
-// Ховер эффекты для ссылок (увеличение курсора)
-const links = document.querySelectorAll('a, .project-card, .service-item');
-links.forEach(link => {
-    link.addEventListener('mouseenter', () => {
-        gsap.to(cursor, { scale: 3, duration: 0.3 });
-    });
-    link.addEventListener('mouseleave', () => {
-        gsap.to(cursor, { scale: 1, duration: 0.3 });
-    });
-});
