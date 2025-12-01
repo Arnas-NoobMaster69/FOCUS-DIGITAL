@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FOCUS DIGITAL | Системный Маркетинг</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+
+    <style>
+        /* --- CORE VARIABLES --- */
+        :root {
+            --bg-dark: #030303;
+            --bg-card: rgba(20, 20, 20, 0.6);
+            --accent: #FF5500; /* Яркий оранжевый */
+            --accent-gradient: linear-gradient(135deg, #FF5500, #FF8800);
+            --text-main: #FFFFFF;
+            --text-sec: #A0A0A0;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --blur: 20px;
+            --padding-container: max(20px, 5vw);
+        }
+
+        /* --- RESET & BASE --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+        
+        html, body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Шум (Noise Texture) для дороговизны */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 999;
+        }
+
+        /* Типографика */
+        h1 { font-size: clamp(40px, 6vw, 80px); line-height: 1.1; font-weight: 800; letter-spacing: -0.02em; }
+        h2 { font-size: clamp(32px, 4vw, 56px); line-height: 1.2; font-weight: 700; margin-bottom: 24px; }
+        h3 { font-size: 24px; font-weight: 600; margin-bottom: 12px; }
+        p { font-size: clamp(16px, 1.2vw, 18px); color: var(--text-sec); line-height: 1.6; margin-bottom: 20px; }
+        
+        .accent { 
+            background: var(--accent-gradient); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--padding-container);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 36px;
+            background: var(--text-main);
+            color: #000;
+            font-weight: 700;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            font-size: 16px;
+        }
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--accent-gradient);
+            z-index: -1; transition: transform 0.4s;
+            transform: scaleX(0); transform-origin: right;
+        }
+        .btn:hover { color: #fff; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 85, 0, 0.3); }
+        .btn:hover::before { transform: scaleX(1); transform-origin: left; }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.1); border-color: #fff; }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 40px); max-width: 1240px;
+            padding: 15px 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-radius: 20px;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+        .logo { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; }
+
+        /* --- CANVAS HERO BG --- */
+        #hero-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: 0; opacity: 0.6; pointer-events: none;
+        }
+
+        /* --- SECTIONS --- */
+        section { padding: 100px 0; position: relative; }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh; min-height: 700px;
+            display: flex; flex-direction: column; justify-content: center;
+            padding-top: 80px;
+        }
+        .hero-content { max-width: 800px; position: relative; z-index: 2; }
+        .hero-tags {
+            display: flex; gap: 10px; margin-bottom: 25px;
+        }
+        .tag {
+            padding: 6px 14px; border-radius: 30px;
+            background: rgba(255, 85, 0, 0.1); border: 1px solid rgba(255, 85, 0, 0.3);
+            color: var(--accent); font-size: 13px; font-weight: 600; text-transform: uppercase;
+        }
+
+        /* Floating 3D Elements (CSS Only) */
+        .floating-shape {
+            position: absolute; width: 100px; height: 100px;
+            background: linear-gradient(45deg, var(--accent), #ff0055);
+            filter: blur(60px); opacity: 0.5; border-radius: 50%;
+            animation: float 10s infinite ease-in-out;
+            z-index: 1;
+        }
+        @keyframes float { 0%,100% { transform: translate(0,0); } 50% { transform: translate(30px, -30px); } }
+
+        /* --- PAIN POINTS (CARDS) --- */
+        .grid-3 {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            padding: 40px; border-radius: 24px;
+            transition: 0.4s; position: relative; overflow: hidden;
+        }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(30,30,30,0.8); }
+        .card-num {
+            font-size: 40px; font-weight: 800; color: rgba(255,255,255,0.05);
+            position: absolute; top: 20px; right: 30px;
+        }
+        
+        /* --- COMPARISON TABLE --- */
+        .comparison-wrap {
+            overflow-x: auto; border-radius: 24px; border: 1px solid var(--glass-border);
+            background: rgba(10,10,10,0.5); padding: 5px;
+        }
+        .comparison-table { width: 100%; min-width: 600px; border-collapse: collapse; }
+        .comparison-table th, .comparison-table td {
+            padding: 25px; text-align: left; border-bottom: 1px solid var(--glass-border);
+        }
+        .comparison-table th { color: var(--text-sec); font-size: 14px; text-transform: uppercase; }
+        .comparison-table td:last-child { color: var(--accent); font-weight: 700; background: rgba(255,85,0,0.05); }
+        .comparison-table td:first-child { font-weight: 600; color: #fff; }
+
+        /* --- SERVICES (Interactive) --- */
+        .service-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 40px 0; border-bottom: 1px solid var(--glass-border);
+            transition: 0.3s; cursor: default;
+        }
+        .service-row:hover { padding-left: 20px; border-color: #fff; }
+        .service-row h3 { margin: 0; font-size: clamp(20px, 2.5vw, 32px); }
+        .service-arrow {
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid #fff;
+            display: flex; align-items: center; justify-content: center;
+            transform: rotate(-45deg); transition: 0.3s;
+        }
+        .service-row:hover .service-arrow { background: #fff; color: #000; transform: rotate(0); }
+
+        /* --- CTA FOOTER --- */
+        .cta-section {
+            background: radial-gradient(circle at center, rgba(255,85,0,0.15) 0%, transparent 70%);
+            text-align: center; padding: 150px 0;
+        }
+        
+        /* --- MOBILE ADAPTIVE --- */
+        @media (max-width: 768px) {
+            header { top: 10px; width: calc(100% - 20px); padding: 12px 20px; }
+            .hero-content { text-align: left; }
+            .btn { width: 100%; margin-top: 10px; }
+            section { padding: 60px 0; }
+            .grid-3 { grid-template-columns: 1fr; }
+            
+            /* Скролл таблицы на мобильном */
+            .comparison-wrap { margin-right: -20px; padding-right: 20px; border-right: none; border-radius: 24px 0 0 24px; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="noise-overlay"></div>
+    <canvas id="hero-canvas"></canvas>
+
+    <header class="gsap-header">
+        <div class="logo">FOCUS<span style="color:var(--accent)">.DIGITAL</span></div>
+        <a href="https://wa.me/YOUR_NUMBER" class="btn-glass" style="padding: 10px 20px; border-radius: 12px; font-size: 14px;">Связаться</a>
+    </header>
+
+    <section class="hero">
+        <div class="floating-shape" style="top: 20%; right: 10%; background: blue;"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-tags gsap-fade">
+                    <span class="tag">Marketing</span>
+                    <span class="tag">Strategy</span>
+                    <span class="tag">Almaty</span>
+                </div>
+                <h1 class="gsap-fade">
+                    Стабильный поток <br>
+                    <span class="accent">целевых заявок</span> <br>
+                    для вашего бизнеса.
+                </h1>
+                <p class="gsap-fade" style="margin-top: 30px; max-width: 600px;">
+                    Мы строим систему, где каждая вложенная тенге в рекламу приносит прибыль. 
+                    Честный маркетинг для МСБ без сложных слов и пустых обещаний.
+                </p>
+                <div class="gsap-fade" style="margin-top: 40px; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="#cta" class="btn">Получить расчет стоимости</a>
+                    <a href="#cases" class="btn btn-glass">Смотреть кейсы</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="problems">
+        <div class="container">
+            <h2 class="gsap-reveal">Почему реклама <br>не работает?</h2>
+            <div class="grid-3">
+                <div class="card gsap-card">
+                    <span class="card-num">01</span>
+                    <h3>Слив бюджета</h3>
+                    <p>Реклама крутится, лайки идут, а продаж нет. Вы платите за воздух, а не за клиентов.</p>
+                </div>
+                <div class="card gsap-card">
+                    <span class="card-num">02</span>
+                    <h3>Размытая ответственность</h3>
+                    <p>Таргетолог кивает на сайт, сммщик на алгоритмы. В итоге виноватых нет, а денег тоже нет.</p>
+                </div>
+                <div class="card gsap-card">
+                    <span class="card-num">03</span>
+                    <h3>Технические дыры</h3>
+                    <p>Клиент кликает, но сайт долго грузится или форма не работает. Вы теряете 40% трафика просто так.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="compare">
+        <div class="container">
+            <h2 class="gsap-reveal">Мы — ваша страховка <br>от потери денег.</h2>
+            <div class="comparison-wrap gsap-reveal">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Критерий</th>
+                            <th>Фрилансеры / Обычные агентства</th>
+                            <th>FOCUS.DIGITAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ответственность</td>
+                            <td>"Я только настроил, дальше не знаю"</td>
+                            <td>Единый договор на результат</td>
+                        </tr>
+                        <tr>
+                            <td>Техническая часть</td>
+                            <td>Вам нужно искать программиста отдельно</td>
+                            <td>Мы сами правим сайт под трафик</td>
+                        </tr>
+                        <tr>
+                            <td>Отчетность</td>
+                            <td>Сложные таблицы с CTR и охватами</td>
+                            <td>Понятные цифры: Потратили -> Заработали</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2 class="gsap-reveal">Пакет "Стабильные Продажи"</h2>
+            <p style="margin-bottom: 50px;">Мы не продаем услуги по отдельности. Мы продаем результат в комплексе.</p>
+            
+            <div class="services-list">
+                <div class="service-row gsap-row">
+                    <div>
+                        <h3>01. Стратегия и Аудит</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 14px;">Полный разбор конкурентов и поиск вашей ЦА.</p>
+                    </div>
+                    <div class="service-arrow">→</div>
+                </div>
+                <div class="service-row gsap-row">
+                    <div>
+                        <h3>02. Таргетированная Реклама</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 14px;">Insta/FB/TikTok. Генерация лидов.</p>
+                    </div>
+                    <div class="service-arrow">→</div>
+                </div>
+                <div class="service-row gsap-row">
+                    <div>
+                        <h3>03. Контент для продаж</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 14px;">Упаковка профиля, креативы, офферы.</p>
+                    </div>
+                    <div class="service-arrow">→</div>
+                </div>
+                <div class="service-row gsap-row">
+                    <div>
+                        <h3 style="color: var(--accent);">04. Тех. Поддержка Конверсии</h3>
+                        <p style="margin: 5px 0 0 0; font-size: 14px;">Бесплатная доработка посадочных страниц.</p>
+                    </div>
+                    <div class="service-arrow">→</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2 class="gsap-reveal">Прозрачный процесс</h2>
+            <div class="grid-3">
+                <div style="border-left: 2px solid var(--accent); padding-left: 20px;">
+                    <h3>Неделя 1</h3>
+                    <p>Аудит, договор, создание креативов, настройка аналитики.</p>
+                </div>
+                <div style="border-left: 2px solid #333; padding-left: 20px;">
+                    <h3>Неделя 2</h3>
+                    <p>Запуск тестовых кампаний. Поиск рабочей связки.</p>
+                </div>
+                <div style="border-left: 2px solid #333; padding-left: 20px;">
+                    <h3>Неделя 3-4</h3>
+                    <p>Отключение нерабочего, масштабирование прибыли.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="cta">
+        <div class="floating-shape" style="bottom: 10%; left: 10%; background: orange; width: 200px; height: 200px; filter: blur(80px);"></div>
+        <div class="container" style="position: relative; z-index: 2;">
+            <h2 class="gsap-zoom">Узнайте стоимость <br>клиента в вашей нише</h2>
+            <p style="max-width: 500px; margin: 0 auto 40px auto;">
+                Не гадайте на кофейной гуще. Получите бесплатный расчет медиаплана и прогноз результатов.
+            </p>
+            <a href="https://wa.me/7066377126" class="btn" style="padding: 20px 50px; font-size: 18px;">
+                Получить Расчет в WhatsApp
+            </a>
+        </div>
+    </section>
+
+    <footer style="padding: 40px 0; border-top: 1px solid #222; text-align: center; color: #555;">
+        <div class="container">
+            <p style="margin-bottom: 5px;">© 2025 FOCUS DIGITAL. Almaty.</p>
+            <p style="font-size: 12px;">Marketing & Development.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Плавный скролл (Lenis)
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            smooth: true,
+        });
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // 2. GSAP Animations (Появление элементов)
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero анимация
+        gsap.from(".gsap-fade", {
+            y: 50, opacity: 0, duration: 1, stagger: 0.2, ease: "power3.out", delay: 0.5
+        });
+        gsap.from("header", {
+            y: -100, opacity: 0, duration: 1, ease: "power3.out", delay: 0.2
+        });
+
+        // Заголовки разделов
+        gsap.utils.toArray('.gsap-reveal').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: "top 80%" },
+                y: 50, opacity: 0, duration: 1, ease: "power3.out"
+            });
+        });
+
+        // Карточки (каскад)
+        gsap.from(".gsap-card", {
+            scrollTrigger: { trigger: ".grid-3", start: "top 80%" },
+            y: 50, opacity: 0, duration: 0.8, stagger: 0.2, ease: "back.out(1.7)"
+        });
+
+        // Строки услуг
+        gsap.utils.toArray('.gsap-row').forEach(row => {
+            gsap.from(row, {
+                scrollTrigger: { trigger: row, start: "top 90%" },
+                x: -30, opacity: 0, duration: 0.6, ease: "power2.out"
+            });
+        });
+
+        // CTA Zoom
+        gsap.from(".gsap-zoom", {
+            scrollTrigger: { trigger: "#cta", start: "top 70%" },
+            scale: 0.9, opacity: 0, duration: 1, ease: "power2.out"
+        });
+
+        // 3. CANVAS BACKGROUND (Легкие частицы)
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2;
+                this.alpha = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0) this.x = width;
+                if(this.x > width) this.x = 0;
+                if(this.y < 0) this.y = height;
+                if(this.y > height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = window.innerWidth < 768 ? 30 : 60; // Меньше частиц на мобилке
+            for(let i=0; i<count; i++) particles.push(new Particle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.addEventListener('resize', () => { resize(); initParticles(); });
+        resize();
+        initParticles();
+        animateCanvas();
+
+    </script>
+</body>
+</html>
