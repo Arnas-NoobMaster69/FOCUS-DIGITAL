@@ -5,11 +5,255 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FOCUS.DIGITAL | Growth Performance</title>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* --- 1. RESET & VARS --- */
+        :root {
+            --bg: #050505;
+            --text: #ffffff;
+            --text-gray: #888888;
+            --accent: #FF3B00; /* Ядреный оранжевый */
+            --accent-dark: #cc2f00;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --font-head: 'Oswald', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --container: 1400px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            /* Убедимся, что скроллбар скрыт для Lenis */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+        body::-webkit-scrollbar { width: 0; } /* Chrome, Safari, Opera */
+
+        a { text-decoration: none; color: inherit; }
+
+        /* Шум на фоне */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.04; pointer-events: none; z-index: 999;
+        }
+
+        /* Контейнер WebGL */
+        #webgl {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -1; 
+            /* Фикс для мобильных: убеждаемся, что он не перекрывает весь контент */
+        }
+
+        /* --- 2. TYPOGRAPHY & UTILS --- */
+        .container {
+            max-width: var(--container); margin: 0 auto; padding: 0 20px;
+        }
+        .glass {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+        }
+        .accent-text { color: var(--accent); }
+
+        /* --- 3. PRELOADER --- */
+        .loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        .loader-wrap { overflow: hidden; display: flex; gap: 10px; }
+        .loader-text {
+            font-family: var(--font-head); font-size: 40px; font-weight: 700;
+            transform: translateY(100%);
+        }
+        .loader-progress {
+            width: 0; height: 2px; background: var(--accent); margin-top: 20px;
+        }
+
+        /* --- 4. NAVIGATION --- */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; padding: 25px 0;
+            z-index: 100; mix-blend-mode: difference; transition: 0.3s;
+        }
+        .nav-container {
+            max-width: var(--container); margin: 0 auto; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            font-family: var(--font-head); font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+        }
+        .dot { color: var(--accent); }
+
+        .nav-links { display: flex; gap: 40px; }
+        .nav-link {
+            text-transform: uppercase; font-size: 14px; letter-spacing: 1px;
+            position: relative; color: #fff; opacity: 0.7; transition: 0.3s;
+        }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 1px;
+            background: var(--accent); transition: 0.3s;
+        }
+        .nav-link:hover { opacity: 1; }
+        .nav-link:hover::after { width: 100%; }
+
+        .btn-small {
+            border: 1px solid rgba(255,255,255,0.3); padding: 10px 24px;
+            border-radius: 50px; font-size: 12px; text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .btn-small:hover { background: #fff; color: #000; }
+
+        /* --- 5. HERO --- */
+        .hero { height: 100vh; display: flex; align-items: center; position: relative; }
+        .hero-content { width: 100%; padding-top: 60px; }
+
+        .label-box {
+            display: inline-flex; align-items: center; gap: 10px;
+            border: 1px solid var(--border); padding: 8px 16px; border-radius: 30px;
+            font-size: 12px; letter-spacing: 1px; margin-bottom: 30px;
+            background: rgba(0,0,0,0.3);
+        }
+        .status-dot { width: 6px; height: 6px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00; }
+
+        .hero-title {
+            font-family: var(--font-head); font-size: clamp(48px, 8vw, 130px);
+            line-height: 0.9; text-transform: uppercase; font-weight: 700;
+        }
+        .line { overflow: hidden; display: block; }
+        .split-text { display: block; transform: translateY(100%); }
+
+        .hero-footer {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border);
+        }
+        .hero-desc { max-width: 400px; color: var(--text-gray); line-height: 1.5; font-size: 16px; }
+
+        .scroll-hint { font-size: 12px; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .line-down { width: 1px; height: 40px; background: var(--accent); animation: scrollDown 2s infinite; }
+        @keyframes scrollDown { 0% { transform-origin: top; transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform-origin: bottom; transform: scaleY(0); } }
+
+        /* --- 6. TICKER --- */
+        .ticker-wrap {
+            padding: 30px 0; background: var(--accent); color: #000;
+            overflow: hidden; transform: rotate(-2deg) scale(1.05); margin: 50px 0;
+        }
+        .ticker { display: flex; white-space: nowrap; animation: ticker 20s linear infinite; }
+        .ticker-item { font-family: var(--font-head); font-size: 60px; font-weight: 700; margin-right: 40px; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- 7. STATS (About) --- */
+        .stats-section { padding: 150px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .section-title {
+            font-family: var(--font-head); font-size: clamp(32px, 5vw, 60px);
+            line-height: 1; margin-bottom: 30px;
+        }
+        .section-desc { color: var(--text-gray); line-height: 1.6; margin-bottom: 40px; font-size: 18px; max-width: 500px; }
+        .btn-arrow { font-size: 18px; color: var(--accent); display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+        .arrow { transition: 0.3s; }
+        .btn-arrow:hover .arrow { transform: translateX(10px); }
+
+        .stats-cards { display: flex; flex-direction: column; gap: 30px; }
+        .stat-card {
+            padding: 40px; border-radius: 0; position: relative;
+            display: flex; flex-direction: column; gap: 10px; transition: 0.4s;
+        }
+        .stat-card:hover { border-color: var(--accent); transform: translateX(-10px); }
+        .stat-num { font-family: var(--font-head); font-size: 60px; color: #fff; }
+        .stat-label { color: var(--text-gray); text-transform: uppercase; font-size: 12px; letter-spacing: 1px; }
+
+        /* --- 8. SYSTEM --- */
+        .system-section { padding: 100px 0; }
+        .center { text-align: center; }
+        .system-grid { margin-top: 80px; display: flex; flex-direction: column; }
+        .sys-item {
+            padding: 40px 0; position: relative; cursor: pointer; transition: 0.3s;
+        }
+        .sys-item:hover .sys-head h3 { color: var(--accent); padding-left: 20px; }
+        .sys-line {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+        .sys-head { display: flex; align-items: baseline; gap: 30px; }
+        .sys-num { color: var(--text-gray); font-family: var(--font-head); font-size: 20px; }
+        .sys-head h3 { font-size: clamp(24px, 4vw, 48px); transition: 0.3s; }
+        .sys-body {
+            max-height: 0; overflow: hidden; transition: 0.5s; opacity: 0;
+            margin-left: 60px; max-width: 600px; color: var(--text-gray);
+        }
+        .sys-item:hover .sys-body { max-height: 100px; opacity: 1; margin-top: 20px; }
+
+        /* --- 9. PARALLAX SEP --- */
+        .parallax-sep {
+            height: 60vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+            /* Временно добавим цвет, чтобы видеть, что секция загружена */
+            background-color: #101010; 
+        }
+        .parallax-content h2 {
+            font-family: var(--font-head); font-size: clamp(60px, 12vw, 200px);
+            line-height: 0.8; text-align: center; opacity: 0.2;
+        }
+
+        /* --- 10. CTA --- */
+        .cta-section { min-height: 80vh; display: flex; align-items: center; }
+        .center-col { display: flex; justify-content: center; width: 100%; }
+        .cta-wrapper {
+            padding: 60px; width: 100%; max-width: 800px; text-align: center;
+            border-radius: 20px;
+        }
+        .cta-sub { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-size: 14px; display: block; margin-bottom: 20px; }
+        .cta-title { font-family: var(--font-head); font-size: clamp(30px, 4vw, 60px); margin-bottom: 40px; }
+
+        .contact-form { display: flex; flex-direction: column; gap: 15px; max-width: 400px; margin: 0 auto; }
+        input {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 20px; color: #fff; font-family: var(--font-body); outline: none;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--accent); background: rgba(0,0,0,0.5); }
+
+        .btn-main {
+            padding: 20px; border: none; background: var(--text); color: #000;
+            font-weight: 700; text-transform: uppercase; cursor: pointer;
+            position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .btn-main:hover { color: #fff; background: var(--accent); }
+        .form-note { font-size: 12px; color: var(--text-gray); margin-top: 15px; }
+
+        /* --- 11. FOOTER --- */
+        footer { padding: 60px 0 20px 0; border-top: 1px solid var(--border); }
+        .footer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px; }
+        .footer-logo { font-family: var(--font-head); font-size: 30px; font-weight: 700; }
+        .socials { display: flex; flex-direction: column; gap: 10px; text-align: right; }
+        .socials a { color: var(--text-gray); font-size: 14px; transition: 0.3s; }
+        .socials a:hover { color: #fff; transform: translateX(-5px); }
+        .footer-bottom { display: flex; justify-content: space-between; font-size: 12px; color: #444; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .hero-footer { flex-direction: column; align-items: flex-start; gap: 30px; }
+            .hero-content { padding-top: 100px; }
+            .stats-cards { padding-left: 0; }
+        }
+    </style>
 </head>
 <body>
 
@@ -197,11 +441,244 @@
 
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script>
-    
-    <script src="script.js"></script>
+    <script>
+        // --- 1. SETUP LIBRARIES ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 2. SMOOTH SCROLL (LENIS) ---
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smooth: true,
+            mouseMultiplier: 0.6,
+            smoothTouch: false,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+
+        // --- 3. PRELOADER & INITIAL ANIMATIONS ---
+        const tlLoader = gsap.timeline({
+            paused: true,
+            onComplete: () => {
+                document.querySelector('.loader').style.pointerEvents = 'none';
+                
+                // Hero Text Reveal (Kinetic Typography)
+                gsap.to('.split-text', {
+                    y: "0%",
+                    duration: 1.2,
+                    stagger: 0.15,
+                    ease: "power4.out",
+                });
+                
+                // Hero Footer Fade In
+                gsap.from('.fade-in', {
+                    opacity: 0,
+                    y: 20,
+                    duration: 1,
+                    ease: "power2.out",
+                    stagger: 0.15,
+                }, "-=0.8");
+            }
+        });
+
+        // Анимация текста в прелоадере
+        tlLoader.from('.loader-text', {
+            y: "100%",
+            stagger: 0.1,
+            duration: 1,
+            ease: "power3.out"
+        }, 0.2)
+        // Анимация прогресса
+        .to('.loader-progress', {
+            width: "100%",
+            duration: 1.5,
+            ease: "power2.inOut"
+        }, 0)
+        // Убираем прелоадер
+        .to('.loader', {
+            y: "-100%",
+            duration: 1,
+            ease: "power3.inOut"
+        }, 1.5);
+
+        // Имитация загрузки для запуска анимации
+        setTimeout(() => {
+            tlLoader.play();
+        }, 500);
+
+
+        // --- 4. GSAP SCROLL TRIGGERS ---
+
+        // Parallax/Scale effect on the Separator
+        gsap.to(".parallax-sep", {
+            scrollTrigger: {
+                trigger: ".parallax-sep",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.5,
+            },
+            y: 100,
+            scale: 1.1 
+        });
+
+
+        // Parallax on Stat Cards
+        gsap.utils.toArray('.stat-card').forEach(card => {
+            const speed = parseFloat(card.dataset.speed);
+            
+            gsap.from(card, {
+                y: 100 * (speed - 1),
+                opacity: 0,
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 95%", // Сделаем старт раньше для мобильных
+                    end: "bottom top",
+                    scrub: 1,
+                }
+            });
+        });
+
+        // Simple Fade-In for Section Titles
+        gsap.utils.toArray('.section-title').forEach(title => {
+            gsap.from(title, {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: title,
+                    start: "top 90%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+
+        // --- 5. THREE.JS (DIGITAL TERRAIN / LANDSCAPE) ---
+
+        const canvas = document.createElement('canvas');
+        document.getElementById('webgl').appendChild(canvas);
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            alpha: true, 
+            antialias: true,
+            canvas: canvas // Используем созданный canvas
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Геометрия: Плоскость с высокой детализацией
+        const planeSize = 30;
+        const segments = 64; 
+        const geometry = new THREE.PlaneGeometry(planeSize, planeSize, segments, segments);
+
+        // Материал
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xFF3B00, // Accent color
+            wireframe: true,
+            transparent: true,
+            opacity: 0.2
+        });
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = -Math.PI * 0.5; // Поворот, чтобы лежала горизонтально
+        scene.add(mesh);
+
+        // Камера
+        camera.position.z = 10;
+        camera.position.y = 5;
+        camera.rotation.x = -Math.PI * 0.1;
+
+        const clock = new THREE.Clock();
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) - 0.5;
+            mouseY = (event.clientY / window.innerHeight) - 0.5;
+        });
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            const elapsedTime = clock.getElapsedTime();
+            const positions = geometry.attributes.position.array;
+            
+            // Анимация вершин (Волны)
+            for (let i = 0; i < positions.length; i += 3) {
+                const x = positions[i];
+                const y = positions[i + 1];
+                
+                positions[i + 2] = (
+                    Math.sin(x * 0.5 + elapsedTime * 0.5) * 0.5 + 
+                    Math.cos(y * 0.5 + elapsedTime * 0.5) * 0.5
+                ) * 0.5; 
+            }
+            
+            geometry.attributes.position.needsUpdate = true;
+            
+            // Плавное следование камеры за мышью
+            const targetX = mouseX * 2;
+            const targetY = mouseY * 2;
+            
+            camera.position.x += (targetX - camera.position.x) * 0.02;
+            camera.position.y += (-targetY + 5 - camera.position.y) * 0.02;
+            
+            renderer.render(scene, camera);
+        }
+
+        animate3D();
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+
+        // --- 6. MAGNETIC BUTTON (CTA) ---
+        const btn = document.querySelector('.btn-main');
+        if (btn) {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const maxMove = 20;
+                
+                const moveX = ((x - centerX) / centerX) * maxMove;
+                const moveY = ((y - centerY) / centerY) * maxMove;
+
+                gsap.to(btn, {
+                    x: moveX,
+                    y: moveY,
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "Power2.out"
+                });
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    ease: "elastic.out(1, 0.5)"
+                });
+            });
+        }
+    </script>
 </body>
 </html>
