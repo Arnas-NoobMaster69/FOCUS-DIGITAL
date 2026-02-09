@@ -1,639 +1,985 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOCUS DIGITAL | Enterprise Performance Marketing</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
-    
-    <style>
-        :root {
-            --bg-dark: #0d1117;
-            --bg-card: #161b22;
-            --border: #30363d;
-            --accent: #FF5C00;
-            --accent-glow: rgba(255, 92, 0, 0.4);
-            --text-main: #e6edf3;
-            --text-muted: #7d8590;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOVA GROWTH STUDIO — Performance & Brand Systems</title>
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
-        /* Canvas Container for New Animation */
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: -1;
-            opacity: 0.6;
-            pointer-events: none;
-        }
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
-        /* Typography & Utilities */
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        .gradient-text {
-            background: linear-gradient(135deg, #fff 30%, #999 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .accent-gradient {
-            background: linear-gradient(135deg, #FF5C00 0%, #FF8E53 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+  <!-- Animations (optional but nice) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-        /* Glassmorphism Cards */
-        .glass {
-            background: rgba(22, 27, 34, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .glass:hover {
-            border-color: #58a6ff;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+  <style>
+    :root{
+      --bg:#070A12;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.10);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.62);
+      --muted2: rgba(255,255,255,.44);
+      --accent:#7C3AED;   /* violet */
+      --accent2:#22D3EE;  /* cyan */
+      --accent3:#F97316;  /* orange */
+      --glow: rgba(124,58,237,.35);
+    }
+    html,body{height:100%;}
+    body{
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x:hidden;
+    }
+    .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .glass{
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .btn{
+      position:relative;
+      overflow:hidden;
+      transform: translateZ(0);
+    }
+    .btn::after{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.20), transparent 55%);
+      opacity:0;
+      transition:opacity .35s ease;
+      pointer-events:none;
+    }
+    .btn:hover::after{opacity:1;}
+    .shine{
+      position:relative;
+      overflow:hidden;
+    }
+    .shine:before{
+      content:"";
+      position:absolute; top:-120%; left:-120%;
+      width:240%; height:240%;
+      background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.10), transparent 60%);
+      transform: rotate(12deg);
+      animation: sweep 7s linear infinite;
+      pointer-events:none;
+      opacity:.35;
+    }
+    @keyframes sweep{
+      0%{transform: translate(-30%, -30%) rotate(12deg);}
+      100%{transform: translate(30%, 30%) rotate(12deg);}
+    }
 
-        /* Custom Button */
-        .btn-glow {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .btn-glow::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: 0.5s;
-        }
-        .btn-glow:hover::after { left: 100%; }
-        .btn-glow:hover { box-shadow: 0 0 30px var(--accent-glow); }
+    /* Background */
+    #bg-canvas{
+      position:fixed; inset:0;
+      z-index:-3;
+      opacity:.85;
+      pointer-events:none;
+    }
+    .grid{
+      position:fixed; inset:0;
+      z-index:-2;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 50% 25%, black 28%, transparent 72%);
+      opacity:.45;
+    }
+    .noise{
+      position:fixed; inset:0;
+      z-index:-1;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+      opacity:.25;
+    }
 
-        /* General Z-Index Fix */
-        section { position: relative; z-index: 10; }
-        
-        /* Grid Background Pattern */
-        .grid-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-            z-index: -2;
-            pointer-events: none;
-        }
+    /* Soft gradient blobs */
+    .blob{
+      position:absolute; border-radius:999px;
+      filter: blur(80px);
+      opacity:.20;
+      transform: translateZ(0);
+      pointer-events:none;
+    }
 
-        /* Fix for Image Stretching */
-        .case-image-container {
-            position: relative;
-            
-            overflow: hidden;
-            border-radius: 1rem; /* rounded-2xl */
+    /* Better focus states */
+    a, button, summary { outline: none; }
+    :focus-visible{
+      outline: 2px solid rgba(34,211,238,.8);
+      outline-offset: 3px;
+      border-radius: 10px;
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          boxShadow: {
+            glow: "0 0 0 1px rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.55)",
+            neon: "0 0 35px rgba(124,58,237,.30)"
+          }
         }
-        .case-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Ensures the image covers the container without stretching */
-            position: absolute;
-            top: 0;
-            left: 0;
-            /* No more h-[120%] or parallax-img class in CSS */
-        }
-    </style>
+      }
+    }
+  </script>
 </head>
+
 <body class="antialiased">
+  <canvas id="bg-canvas"></canvas>
+  <div class="grid"></div>
+  <div class="noise"></div>
 
-    <canvas id="canvas-container"></canvas> <div class="grid-bg"></div>
-
-    <header class="fixed top-0 w-full z-50 border-b border-[#30363d] bg-[#0d1117]/80 backdrop-blur-xl">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="text-xl md:text-2xl font-bold tracking-tight flex items-center gap-3">
-                <div class="relative flex h-3 w-3">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-3 w-3 bg-[#FF5C00]"></span>
-                </div>
-                <span class="text-white">FOCUS<span class="text-[#7d8590]">.DIGITAL</span></span>
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="mt-4 glass rounded-2xl shadow-glow">
+        <div class="h-16 px-4 md:px-6 flex items-center justify-between">
+          <a href="#top" class="flex items-center gap-3">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl glass border border-white/10">
+              <span class="h-2.5 w-2.5 rounded-full" style="background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow:0 0 18px var(--glow)"></span>
+            </span>
+            <div class="leading-tight">
+              <div class="font-extrabold tracking-tight">NOVA<span class="text-white/55">.STUDIO</span></div>
+              <div class="mono text-[10px] text-white/45 -mt-0.5">PERFORMANCE • BRAND • SYSTEMS</div>
             </div>
+          </a>
 
-            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-[#7d8590]">
-                <a href="#solutions" class="hover:text-white transition-colors">Решения</a>
-                <a href="#cases" class="hover:text-white transition-colors">Результаты</a>
-                <a href="#methodology" class="hover:text-white transition-colors">Методология</a>
-            </nav>
+          <nav class="hidden md:flex items-center gap-7 text-sm text-white/60">
+            <a class="hover:text-white transition" href="#services">Услуги</a>
+            <a class="hover:text-white transition" href="#cases">Кейсы</a>
+            <a class="hover:text-white transition" href="#process">Процесс</a>
+            <a class="hover:text-white transition" href="#pricing">Формат</a>
+            <a class="hover:text-white transition" href="#faq">FAQ</a>
+          </nav>
 
-            <a href="https://wa.me/7066377126" class="hidden md:flex items-center gap-2 px-5 py-2 text-sm font-bold border border-[#30363d] rounded-full hover:border-white transition-all text-white bg-white/5 hover:bg-white/10">
-                <span>Start Project</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+          <div class="flex items-center gap-3">
+            <a href="#contact"
+               class="hidden sm:inline-flex btn items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold glass border border-white/10 hover:border-white/20 transition">
+              Получить аудит
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
+              </svg>
             </a>
-            
+
+            <button id="mobileBtn" class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-xl glass border border-white/10">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="md:hidden hidden border-t border-white/10 px-4 py-4">
+          <div class="grid gap-3 text-sm text-white/70">
+            <a class="hover:text-white transition" href="#services">Услуги</a>
+            <a class="hover:text-white transition" href="#cases">Кейсы</a>
+            <a class="hover:text-white transition" href="#process">Процесс</a>
+            <a class="hover:text-white transition" href="#pricing">Формат</a>
+            <a class="hover:text-white transition" href="#faq">FAQ</a>
+            <a class="btn inline-flex items-center justify-center rounded-xl px-4 py-3 font-semibold"
+               style="background: linear-gradient(135deg, var(--accent), var(--accent2));"
+               href="#contact">Записаться на созвон</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="top" class="pt-28">
+    <!-- Hero -->
+    <section class="relative">
+      <div class="blob w-[520px] h-[520px] -top-20 -left-36" style="background: var(--accent);"></div>
+      <div class="blob w-[520px] h-[520px] top-40 -right-40" style="background: var(--accent2);"></div>
+      <div class="blob w-[420px] h-[420px] top-[520px] left-1/3" style="background: var(--accent3); opacity:.14;"></div>
+
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="grid lg:grid-cols-12 gap-10 items-center">
+          <div class="lg:col-span-7">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 text-white/70 mono text-xs">
+              <span class="inline-flex h-2 w-2 rounded-full" style="background: linear-gradient(135deg, var(--accent2), var(--accent));"></span>
+              Системный маркетинг для роста прибыли
             </div>
-    </header>
 
-    <main>
-        <section class="relative min-h-[100dvh] flex items-center justify-center pt-20 overflow-hidden">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#FF5C00] opacity-10 blur-[120px] rounded-full pointer-events-none"></div>
+            <h1 class="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.02]">
+              Мы строим <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, var(--accent2), var(--accent));">продажи</span>,
+              а не «запуски».
+            </h1>
 
-            <div class="max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-2 gap-12 items-center relative z-10">
-                <div class="hero-content">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#30363d] bg-[#161b22]/50 mb-8 backdrop-blur-md">
-                        <span class="text-xs font-mono text-[#FF5C00] tracking-wider">Маркетинговое Агенство</span>
-                    </div>
-                    
-                    <h2 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] tracking-tight mb-8">
-                        <span class="block text-white reveal-text">Увеличиваем</span>
-                        <span class="block accent-gradient reveal-text">чистую прибыль.</span>
-                    </h2>
-                    
-                    <p class="text-lg md:text-xl text-[#7d8590] max-w-xl mb-10 leading-relaxed hero-p">
-                        Мы превращаем хаос социальных сетей в предсказуемый поток выручки. Performance-маркетинг для бизнеса, который перерос уровень "просто красивых картинок".
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4 hero-btns">
-                        <a href="#contact" class="btn-glow bg-[#FF5C00] text-white px-8 py-4 rounded-xl font-bold text-center flex items-center justify-center gap-2">
-                            Получить Стратегию
-                        </a>
-                        <a href="#cases" class="px-8 py-4 rounded-xl border border-[#30363d] text-white font-semibold hover:bg-[#30363d] transition-colors text-center">
-                            Кейсы
-                        </a>
-                    </div>
+            <p class="mt-6 text-lg md:text-xl text-white/65 leading-relaxed max-w-2xl">
+              NOVA Growth Studio — команда, которая соединяет performance, креатив и аналитику в одну понятную систему:
+              лиды → сделки → LTV → масштабирование.
+            </p>
 
-                    <div class="mt-16 pt-8 border-t border-[#30363d]/50 flex flex-wrap gap-6 text-xs font-mono text-[#57606a]">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 bg-green-500 rounded-full"></div> META ADS
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 bg-blue-500 rounded-full"></div> END-TO-END ANALYTICS
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 bg-purple-500 rounded-full"></div> tiktok ads
-                        </div>
-                    </div>
-                </div>
+            <div class="mt-9 flex flex-col sm:flex-row gap-3">
+              <a href="#contact"
+                 class="btn inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold text-black"
+                 style="background: linear-gradient(135deg, var(--accent2), var(--accent)); box-shadow:0 18px 70px rgba(34,211,238,.18);">
+                Получить план роста за 7 минут
+                <svg class="ml-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+
+              <a href="#cases"
+                 class="btn inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold glass border border-white/10 hover:border-white/20 transition">
+                Посмотреть кейсы
+              </a>
             </div>
-        </section>
 
-        <section class="py-24 md:py-32 border-t border-[#30363d] bg-[#0d1117]">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="grid md:grid-cols-2 gap-16 items-start">
-                    
-                    <div class="sticky top-32">
-                        <h2 class="text-3xl md:text-5xl font-bold mb-6 text-white">Старая модель маркетинга <span class="text-[#FF5C00]">мертва</span>.</h2>
-                        <p class="text-[#7d8590] text-lg leading-relaxed mb-6">
-                            В 2025 году недостаточно просто "запустить таргет". Рынок перегрет. Побеждает тот, кто использует данные, строит сложные воронки и управляет ценностью клиента.
-                        </p>
-                        <p class="text-[#7d8590] text-lg leading-relaxed">
-                            Focus Digital — это не творческое объединение. Это аналитический центр, где креатив подчиняется математике.
-                        </p>
-                    </div>
-
-                    <div class="grid gap-6">
-                        <div class="glass p-8 rounded-2xl relative overflow-hidden group">
-                            <div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-50 transition-opacity text-[#FF5C00]">
-                                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6z"/><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                            </div>
-                            <div class="text-5xl md:text-6xl font-bold text-white mb-2 counter" data-target="150">0</div>
-                            <div class="text-sm font-mono text-[#7d8590] uppercase tracking-wider">Тысачь $ выручки клиентам</div>
-                            <p class="mt-4 text-sm text-[#7d8590]">Совокупный доход наших партнеров за последний финансовый год.</p>
-                        </div>
-
-                        <div class="glass p-8 rounded-2xl relative overflow-hidden group">
-                            <div class="text-5xl md:text-6xl font-bold text-[#FF5C00] mb-2 counter" data-target="260">0</div>
-                            <div class="text-sm font-mono text-[#7d8590] uppercase tracking-wider">% Средний ROMI</div>
-                            <p class="mt-4 text-sm text-[#7d8590]">Return on Marketing Investment. На каждый вложенный $1 мы возвращаем $2.6.</p>
-                        </div>
-
-                        <div class="glass p-8 rounded-2xl relative overflow-hidden group">
-                            <div class="text-5xl md:text-6xl font-bold text-white mb-2 counter" data-target="58">0</div>
-                            <div class="text-sm font-mono text-[#7d8590] uppercase tracking-wider">Ниш протестировано</div>
-                            <p class="mt-4 text-sm text-[#7d8590]">От строительства домов до продажи элитной косметики. Мы знаем бенчмарки рынка.</p>
-                        </div>
-                    </div>
-
-                </div>
+            <div class="mt-10 grid sm:grid-cols-3 gap-4 max-w-2xl">
+              <div class="glass rounded-2xl p-4 border border-white/10">
+                <div class="mono text-xs text-white/55">Фокус</div>
+                <div class="mt-1 font-semibold">Unit-экономика & LTV</div>
+              </div>
+              <div class="glass rounded-2xl p-4 border border-white/10">
+                <div class="mono text-xs text-white/55">Скорость</div>
+                <div class="mt-1 font-semibold">Тесты 10–14 дней</div>
+              </div>
+              <div class="glass rounded-2xl p-4 border border-white/10">
+                <div class="mono text-xs text-white/55">Прозрачность</div>
+                <div class="mt-1 font-semibold">Дашборд + отчеты</div>
+              </div>
             </div>
-        </section>
+          </div>
 
-        <section id="solutions" class="py-24 relative z-10">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="mb-16">
-                    <span class="text-[#FF5C00] font-mono text-sm tracking-widest uppercase">Инструментарий</span>
-                    <h2 class="text-4xl md:text-5xl font-bold mt-2 text-white">Full-Stack Growth</h2>
+          <!-- Hero side card -->
+          <div class="lg:col-span-5">
+            <div class="shine glass rounded-3xl p-6 md:p-7 border border-white/10 shadow-glow">
+              <div class="flex items-start justify-between gap-4">
+                <div>
+                  <div class="mono text-xs text-white/55">Быстрый диагностический аудит</div>
+                  <div class="mt-2 text-2xl font-bold">Где вы теряете деньги?</div>
+                  <p class="mt-2 text-white/65">
+                    За один созвон покажем: узкие места в воронке, что чинить первым, и где лежит самый дешевый рост.
+                  </p>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
-                    
-                    <div class="md:col-span-2 glass p-8 rounded-3xl relative overflow-hidden group hover:border-[#FF5C00]/50 transition-colors">
-                        <div class="absolute inset-0 bg-gradient-to-br from-[#FF5C00]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div>
-                                <div class="w-12 h-12 bg-[#21262d] rounded-xl flex items-center justify-center mb-6 border border-[#30363d] text-[#FF5C00]">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m22 2-7.58 7.58"/><path d="M12 2v10"/><path d="M12 12 2 22"/></svg>
-                                </div>
-                                <h3 class="text-2xl font-bold text-white mb-2">Performance Traffic</h3>
-                                <p class="text-[#7d8590] max-w-md">Facebook & Instagram Ads. Мы не таргетируемся на "интересы". Мы создаем Look-alike аудитории на основе ваших покупателей (LTV) и используем API конверсии для обучения алгоритмов.</p>
-                            </div>
-                            <div class="flex gap-2 mt-4 opacity-50 font-mono text-xs text-[#7d8590]">
-                                <span class="bg-[#21262d] px-2 py-1 rounded">CPL: $0.45</span>
-                                <span class="bg-[#21262d] px-2 py-1 rounded">ROAS: 260%</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass p-8 rounded-3xl relative overflow-hidden group hover:border-blue-500/50 transition-colors">
-                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="w-12 h-12 bg-[#21262d] rounded-xl flex items-center justify-center mb-6 border border-[#30363d] text-blue-500">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-white mb-2">Creative Strategy</h3>
-                                <p class="text-[#7d8590] text-sm">Смыслы, которые продают. Пишем офферы, бьющие в боли. Создаем UGC-контент, который выглядит нативно, но продает агрессивно.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="glass p-8 rounded-3xl relative overflow-hidden group hover:border-purple-500/50 transition-colors">
-                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div class="relative z-10 h-full flex flex-col justify-between">
-                            <div class="w-12 h-12 bg-[#21262d] rounded-xl flex items-center justify-center mb-6 border border-[#30363d] text-purple-500">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-white mb-2">End-to-End Analytics</h3>
-                                <p class="text-[#7d8590] text-sm">Сквозная аналитика. Вы видите не клики, а сколько денег в кассе принес каждый креатив.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-2 glass p-8 rounded-3xl relative overflow-hidden group hover:border-green-500/50 transition-colors">
-                        <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 h-full">
-                             <div class="flex-1">
-                                <h3 class="text-2xl font-bold text-white mb-2">Production & Motion</h3>
-                                <p class="text-[#7d8590]">Создание видео-воронок (Reels/TikTok), которые захватывают внимание за 1.5 секунды. Монтаж, 3D-графика, анимация.</p>
-                             </div>
-                             <div class="flex gap-2">
-                              
-                             </div>
-                        </div>
-                    </div>
+                <div class="h-11 w-11 rounded-2xl flex items-center justify-center"
+                     style="background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(34,211,238,.12)); border:1px solid rgba(255,255,255,.10);">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>
+                  </svg>
                 </div>
-            </div>
-        </section>
+              </div>
 
-        <section id="cases" class="py-32 relative overflow-hidden">
-             <div class="absolute right-0 top-1/4 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none"></div>
-
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="mb-20">
-                    <span class="text-[#FF5C00] font-mono text-sm tracking-widest uppercase">Track Record</span>
-                    <h2 class="text-4xl md:text-5xl font-bold mt-2 text-white">Реальные цифры</h2>
+              <div class="mt-6 grid grid-cols-2 gap-3">
+                <div class="glass rounded-2xl p-4 border border-white/10">
+                  <div class="mono text-xs text-white/55">Результат</div>
+                  <div class="mt-1 text-xl font-extrabold">+18–42%</div>
+                  <div class="text-sm text-white/60">к прибыли после «починки»</div>
                 </div>
-
-                <div class="space-y-32">
-                    <div class="group grid md:grid-cols-12 gap-8 items-center">
-                        <div class="h-[230px] md:h-[400px] md:col-span-7 relative case-image-container rounded-2xl overflow-hidden border border-[#30363d]">
-                            <img src="IMG_2619.webp" 
-                                 alt="Case 1" 
-                                 class="transition-transform duration-700">
-                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                        </div>
-                        <div class="md:col-span-5">
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="px-3 py-1 text-xs font-mono border border-[#30363d] rounded-full text-[#7d8590]">E-COMMERCE</span>
-                                <span class="px-3 py-1 text-xs font-mono border border-[#30363d] rounded-full text-[#7d8590]">SCALING</span>
-                            </div>
-                            <h3 class="text-3xl font-bold text-white mb-4">ZakazBuketov.kz</h3>
-                            <p class="text-[#7d8590] mb-8">Масштабирование цветочной компании. Снизили стоимость заявки на 40% при увеличении бюджета в 3 раза.</p>
-                            <div class="grid grid-cols-2 gap-6 border-t border-[#30363d] pt-6">
-                                <div>
-                                    <div class="text-3xl font-bold text-white">+460%</div>
-                                    <div class="text-xs text-[#7d8590] uppercase mt-1">Revenue Growth</div>
-                                </div>
-                                <div>
-                                    <div class="text-3xl font-bold text-[#FF5C00]">$0.3</div>
-                                    <div class="text-xs text-[#7d8590] uppercase mt-1">Cost Per Lead</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="group grid md:grid-cols-12 gap-8 items-center">
-                         <div class="md:col-span-5 order-2 md:order-1">
-                            <div class="flex flex-wrap gap-2 mb-6">
-                                <span class="px-3 py-1 text-xs font-mono border border-[#30363d] rounded-full text-[#7d8590]">RETAIL</span>
-                                <span class="px-3 py-1 text-xs font-mono border border-[#30363d] rounded-full text-[#7d8590]">BRANDING</span>
-                            </div>
-                            <h3 class="text-3xl font-bold text-white mb-4">Jalan Jalan Japan</h3>
-                            <p class="text-[#7d8590] mb-8">Открытие новой точки. Создали ажиотаж за 2 недели до открытия. Очередь на входе в 100 человек.</p>
-                            <div class="grid grid-cols-2 gap-6 border-t border-[#30363d] pt-6">
-                                <div>
-                                    <div class="text-3xl font-bold text-white">2.3k</div>
-                                    <div class="text-xs text-[#7d8590] uppercase mt-1">New Followers</div>
-                                </div>
-                                <div>
-                                    <div class="text-3xl font-bold text-[#FF5C00]">x3</div>
-                                    <div class="text-xs text-[#7d8590] uppercase mt-1">Plan Execution</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="h-[230px] md:h-[400px] md:col-span-7 order-1 md:order-2 relative case-image-container rounded-2xl overflow-hidden border border-[#30363d]">
-                            <img src="jjj2.jpg" 
-                                 alt="Case 2" 
-                                 class="transition-transform duration-700">
-                             <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
-                        </div>
-                    </div>
+                <div class="glass rounded-2xl p-4 border border-white/10">
+                  <div class="mono text-xs text-white/55">Срок</div>
+                  <div class="mt-1 text-xl font-extrabold">14 дней</div>
+                  <div class="text-sm text-white/60">первые измеримые сдвиги</div>
                 </div>
-            </div>
-        </section>
+              </div>
 
-        <section id="methodology" class="py-32 bg-[#0d1117] border-t border-[#30363d]">
-            <div class="max-w-4xl mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-5xl font-bold text-white">Алгоритм работы</h2>
-                    <p class="text-[#7d8590] mt-4">Хаос исключен. Работаем спринтами по системе Agile.</p>
-                </div>
+              <div class="mt-6 flex items-center gap-3 text-sm text-white/60">
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 mono text-xs">
+                  META ADS
+                </span>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 mono text-xs">
+                  TIKTOK
+                </span>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 mono text-xs">
+                  CRM / BI
+                </span>
+              </div>
 
-                <div class="relative space-y-12">
-                    <div class="absolute left-[15px] top-0 bottom-0 w-[2px] bg-[#30363d]">
-                        <div id="scroll-line" class="w-full bg-[#FF5C00] h-0 transition-all duration-300"></div>
-                    </div>
-
-                    <div class="relative pl-12 step-item">
-                        <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-[#0d1117] border-2 border-[#30363d] flex items-center justify-center z-10 step-dot transition-colors">
-                            <span class="text-xs font-bold text-[#7d8590]">1</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-white">Аудит и Декомпозиция</h3>
-                        <p class="text-[#7d8590] mt-2">Разбираем текущую ситуацию. Считаем unit-экономику: сколько вы можете платить за клиента, чтобы быть в плюсе.</p>
-                    </div>
-
-                    <div class="relative pl-12 step-item">
-                        <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-[#0d1117] border-2 border-[#30363d] flex items-center justify-center z-10 step-dot transition-colors">
-                            <span class="text-xs font-bold text-[#7d8590]">2</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-white">Setup & Launch</h3>
-                        <p class="text-[#7d8590] mt-2">Настройка аналитики, упаковка профилей, создание первых 10-15 креативов. Запуск тестового трафика.</p>
-                    </div>
-
-                    <div class="relative pl-12 step-item">
-                        <div class="absolute left-0 top-1 w-8 h-8 rounded-full bg-[#0d1117] border-2 border-[#30363d] flex items-center justify-center z-10 step-dot transition-colors">
-                            <span class="text-xs font-bold text-[#7d8590]">3</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-white">Scaling</h3>
-                        <p class="text-[#7d8590] mt-2">Отключаем убыточные связки. Увеличиваем бюджет на то, что приносит деньги. Выход на плановые KPI.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="py-24 border-t border-[#30363d]">
-            <div class="max-w-3xl mx-auto px-6">
-                <h2 class="text-3xl font-bold mb-10 text-white">Q&A</h2>
-                <div class="space-y-4">
-                    <details class="glass rounded-xl group p-6 cursor-pointer">
-                        <summary class="flex justify-between items-center font-semibold text-white list-none">
-                            Какой бюджет нужен на рекламу?
-                            <span class="transition-transform group-open:rotate-180">
-                                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                            </span>
-                        </summary>
-                        <p class="text-[#7d8590] mt-4 leading-relaxed">Рекомендуемый стартовый бюджет — от $200/мес (не включая наши услуги). Это минимум, необходимый алгоритмам Facebook для обучения и оптимизации.</p>
-                    </details>
-                    
-                    <details class="glass rounded-xl group p-6 cursor-pointer">
-                        <summary class="flex justify-between items-center font-semibold text-white list-none">
-                            Даете ли вы гарантии?
-                            <span class="transition-transform group-open:rotate-180">
-                                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-                            </span>
-                        </summary>
-                        <p class="text-[#7d8590] mt-4 leading-relaxed">Мы гарантируем качество настройки, прозрачность работы и соблюдение сроков. Гарантировать продажи до теста — это мошенничество. Мы делаем прогноз на основе теста, а затем фиксируем KPI в договоре.</p>
-                    </details>
-                </div>
-            </div>
-        </section>
-
-        <footer id="contact" class="py-32 relative overflow-hidden bg-[#0d1117] text-center border-t border-[#30363d]">
-            <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#FF5C00]/10 via-transparent to-transparent pointer-events-none"></div>
-            
-            <div class="relative z-10 max-w-4xl mx-auto px-6">
-                <h2 class="text-5xl md:text-7xl font-bold text-white mb-8 tracking-tighter">Let's make money.</h2>
-                <p class="text-xl text-[#7d8590] mb-12">
-                    Бесплатная стратегическая сессия.<br>Разберем ваши точки роста.
-                </p>
-                <a href="https://wa.me/7066377126" class="btn-glow inline-flex items-center gap-3 bg-white text-black px-10 py-5 rounded-xl text-lg font-bold hover:bg-gray-200 transition-colors">
-                    Написать в WhatsApp
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <div class="mt-6">
+                <a href="#contact"
+                   class="btn w-full inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold text-black"
+                   style="background: linear-gradient(135deg, var(--accent), var(--accent2));">
+                  Записаться на аудит
                 </a>
-                
-                <div class="mt-24 pt-8 border-t border-[#30363d] flex flex-col md:flex-row justify-between items-center text-sm text-[#7d8590]">
-                    <p>&copy; 2025 FOCUS DIGITAL. Almaty, Kazakhstan.</p>
-                    
-                </div>
+                <p class="mt-3 text-xs text-white/45">
+                  Никаких «волшебных кнопок». Только цифры, гипотезы, приоритеты.
+                </p>
+              </div>
             </div>
-        </footer>
-    </main>
+          </div>
+        </div>
 
-    <script>
-        // --- 1. LENIS SMOOTH SCROLL ---
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1,
-            smoothTouch: false,
-            touchMultiplier: 2,
-        });
+        <!-- Logos strip -->
+        <div class="mt-16 mb-8">
+          <div class="glass rounded-2xl border border-white/10 px-5 py-4">
+            <div class="mono text-xs text-white/50">Мы работали с командами в нишах</div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">E-commerce</span>
+              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Retail</span>
+              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Education</span>
+              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Services</span>
+              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Beauty</span>
+              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Real Estate</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
+    <!-- Services -->
+    <section id="services" class="py-20 md:py-28 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div class="mono text-xs tracking-widest text-white/55 uppercase">Услуги</div>
+            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Growth-стек под ключ</h2>
+            <p class="mt-4 text-white/65 max-w-2xl">
+              Мы не продаем «настройку рекламы». Мы продаем систему, где каждый шаг измерим и улучшает маржу.
+            </p>
+          </div>
+          <a href="#contact" class="btn inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold glass border border-white/10 hover:border-white/20 transition">
+            Получить смету
+          </a>
+        </div>
+
+        <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Card -->
+          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
+            <div class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10"
+                 style="background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.12));">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+            </div>
+            <h3 class="mt-5 text-xl font-bold">Performance & Scale</h3>
+            <p class="mt-2 text-white/65">
+              Структура кампаний, события/конверсии, CAPI, сегментация по марже. Делаем рост управляемым.
+            </p>
+            <div class="mt-5 flex flex-wrap gap-2 text-xs mono text-white/55">
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">Meta</span>
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">TikTok</span>
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">Google</span>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
+            <div class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10"
+                 style="background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(249,115,22,.12));">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+              </svg>
+            </div>
+            <h3 class="mt-5 text-xl font-bold">Offer & Creative System</h3>
+            <p class="mt-2 text-white/65">
+              Офферы, углы, UGC-скрипты и серии креативов. Не «один ролик», а конвейер гипотез.
+            </p>
+            <div class="mt-5 flex flex-wrap gap-2 text-xs mono text-white/55">
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">UGC</span>
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">Motion</span>
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">Landing</span>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
+            <div class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10"
+                 style="background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(34,211,238,.12));">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
+              </svg>
+            </div>
+            <h3 class="mt-5 text-xl font-bold">Analytics & BI</h3>
+            <p class="mt-2 text-white/65">
+              Сквозная аналитика, когортный анализ, ROMI/ROAS по марже. Дашборд для руководителя.
+            </p>
+            <div class="mt-5 flex flex-wrap gap-2 text-xs mono text-white/55">
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">GA4</span>
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">CRM</span>
+              <span class="px-2 py-1 rounded-lg glass border border-white/10">Looker</span>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow lg:col-span-2">
+            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+              <div>
+                <div class="mono text-xs tracking-widest text-white/55 uppercase">Сильная сторона</div>
+                <h3 class="mt-2 text-2xl md:text-3xl font-extrabold">Воронки, которые «держат» масштаб</h3>
+                <p class="mt-3 text-white/65 max-w-2xl">
+                  Квиз/лендинг → прогрев → консультация → сделка → повторные продажи.
+                  Мы проектируем путь клиента так, чтобы рост не ломал качество.
+                </p>
+              </div>
+              <div class="glass rounded-2xl border border-white/10 p-4 md:min-w-[240px]">
+                <div class="mono text-xs text-white/55">Обычно улучшаем</div>
+                <ul class="mt-3 space-y-2 text-sm text-white/70">
+                  <li class="flex gap-2"><span class="text-white/40">•</span> CVR на лендинге</li>
+                  <li class="flex gap-2"><span class="text-white/40">•</span> Долю «целевых» лидов</li>
+                  <li class="flex gap-2"><span class="text-white/40">•</span> Конверсию в оплату</li>
+                  <li class="flex gap-2"><span class="text-white/40">•</span> LTV через CRM</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
+            <div class="mono text-xs tracking-widest text-white/55 uppercase">Поддержка</div>
+            <h3 class="mt-2 text-2xl font-extrabold">Growth Squad</h3>
+            <p class="mt-3 text-white/65">
+              Еженедельные спринты: гипотезы → тесты → выводы → внедрение. Без «мы посмотрим через месяц».
+            </p>
+            <div class="mt-5 text-sm text-white/70">
+              <span class="mono text-xs text-white/55">Формат:</span> чат + созвоны + дашборд
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cases -->
+    <section id="cases" class="py-20 md:py-28 border-t border-white/10 relative overflow-hidden">
+      <div class="blob w-[520px] h-[520px] -bottom-44 -left-40" style="background: var(--accent2); opacity:.16;"></div>
+
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="flex items-end justify-between gap-6 flex-wrap">
+          <div>
+            <div class="mono text-xs tracking-widest text-white/55 uppercase">Кейсы</div>
+            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Цифры, которые можно проверить</h2>
+            <p class="mt-4 text-white/65 max-w-2xl">
+              Два примера (шаблон): замените тексты/картинки на свои — блоки уже готовы.
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-12 space-y-10">
+          <!-- Case 1 -->
+          <article class="glass rounded-3xl border border-white/10 overflow-hidden group">
+            <div class="grid md:grid-cols-12">
+              <div class="md:col-span-7 min-h-[260px] md:min-h-[360px] relative">
+                <!-- Placeholder image -->
+                <div class="absolute inset-0"
+                     style="background:
+                       radial-gradient(circle at 20% 30%, rgba(34,211,238,.35), transparent 55%),
+                       radial-gradient(circle at 70% 60%, rgba(124,58,237,.35), transparent 55%),
+                       linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+                     ">
+                </div>
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                     style="background: linear-gradient(135deg, rgba(34,211,238,.12), rgba(124,58,237,.10));"></div>
+                <div class="absolute bottom-5 left-5 right-5 glass rounded-2xl border border-white/10 p-4">
+                  <div class="mono text-xs text-white/55">STACK</div>
+                  <div class="mt-1 flex flex-wrap gap-2 text-sm text-white/75">
+                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Meta CAPI</span>
+                    <span class="px-2 py-1 rounded-lg glass border border-white/10">UGC Pipeline</span>
+                    <span class="px-2 py-1 rounded-lg glass border border-white/10">CRM</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="md:col-span-5 p-6 md:p-8">
+                <div class="flex flex-wrap gap-2">
+                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">E-COM</span>
+                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">SCALING</span>
+                </div>
+                <h3 class="mt-4 text-2xl md:text-3xl font-extrabold">BloomBox — доставка подарков</h3>
+                <p class="mt-3 text-white/65">
+                  Пересобрали оффер, добавили события по марже, и выстроили серию креативов под разные сегменты.
+                </p>
+
+                <div class="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
+                  <div>
+                    <div class="text-3xl font-extrabold text-white">-32%</div>
+                    <div class="mono text-xs text-white/55 uppercase mt-1">CAC</div>
+                  </div>
+                  <div>
+                    <div class="text-3xl font-extrabold text-transparent bg-clip-text"
+                         style="background-image: linear-gradient(135deg, var(--accent2), var(--accent));">
+                      +68%
+                    </div>
+                    <div class="mono text-xs text-white/55 uppercase mt-1">Gross Profit</div>
+                  </div>
+                </div>
+
+                <div class="mt-6 text-sm text-white/55">
+                  <span class="mono">Фокус:</span> LTV + частота повторных покупок
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Case 2 -->
+          <article class="glass rounded-3xl border border-white/10 overflow-hidden group">
+            <div class="grid md:grid-cols-12">
+              <div class="md:col-span-5 p-6 md:p-8 order-2 md:order-1">
+                <div class="flex flex-wrap gap-2">
+                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">SERVICES</span>
+                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">FUNNEL</span>
+                </div>
+                <h3 class="mt-4 text-2xl md:text-3xl font-extrabold">Atlas Clinic — услуги с высоким чеком</h3>
+                <p class="mt-3 text-white/65">
+                  Убрали «мусорные» лиды: сегментация, квиз с фильтрами, прогрев + запись через CRM-скрипты.
+                </p>
+
+                <div class="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
+                  <div>
+                    <div class="text-3xl font-extrabold text-white">x2.4</div>
+                    <div class="mono text-xs text-white/55 uppercase mt-1">CR в оплату</div>
+                  </div>
+                  <div>
+                    <div class="text-3xl font-extrabold text-transparent bg-clip-text"
+                         style="background-image: linear-gradient(135deg, var(--accent), var(--accent3));">
+                      -41%
+                    </div>
+                    <div class="mono text-xs text-white/55 uppercase mt-1">CPL</div>
+                  </div>
+                </div>
+
+                <div class="mt-6 text-sm text-white/55">
+                  <span class="mono">Фокус:</span> качество лидов и скорость обработки
+                </div>
+              </div>
+
+              <div class="md:col-span-7 min-h-[260px] md:min-h-[360px] relative order-1 md:order-2">
+                <div class="absolute inset-0"
+                     style="background:
+                       radial-gradient(circle at 30% 35%, rgba(249,115,22,.32), transparent 55%),
+                       radial-gradient(circle at 70% 70%, rgba(124,58,237,.30), transparent 55%),
+                       linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+                     ">
+                </div>
+                <div class="absolute inset-0 bg-black/10"></div>
+                <div class="absolute bottom-5 left-5 right-5 glass rounded-2xl border border-white/10 p-4">
+                  <div class="mono text-xs text-white/55">DELIVERABLES</div>
+                  <div class="mt-1 flex flex-wrap gap-2 text-sm text-white/75">
+                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Quiz</span>
+                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Scripts</span>
+                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Dashboard</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Process -->
+    <section id="process" class="py-20 md:py-28 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="grid lg:grid-cols-12 gap-10">
+          <div class="lg:col-span-5">
+            <div class="mono text-xs tracking-widest text-white/55 uppercase">Процесс</div>
+            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Работаем спринтами</h2>
+            <p class="mt-4 text-white/65 leading-relaxed">
+              Каждые 7 дней — понятные результаты: что протестировали, что сработало, что масштабируем и почему.
+            </p>
+
+            <div class="mt-8 glass rounded-3xl border border-white/10 p-6">
+              <div class="mono text-xs text-white/55">Внутри спринта</div>
+              <div class="mt-3 grid gap-2 text-sm text-white/70">
+                <div class="flex gap-2"><span class="text-white/35">•</span> 3–8 гипотез</div>
+                <div class="flex gap-2"><span class="text-white/35">•</span> 5–20 креативов</div>
+                <div class="flex gap-2"><span class="text-white/35">•</span> 1–2 улучшения воронки</div>
+                <div class="flex gap-2"><span class="text-white/35">•</span> отчет + план следующей недели</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <div class="space-y-4">
+              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
+                <div class="flex items-start gap-4">
+                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
+                       style="background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.12));">
+                    <span class="mono font-bold">01</span>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold">Диагностика & экономика</h3>
+                    <p class="mt-2 text-white/65">
+                      Считаем допустимый CAC, точку окупаемости, маржу и узкие места. Ставим KPI на прибыль.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
+                <div class="flex items-start gap-4">
+                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
+                       style="background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(249,115,22,.12));">
+                    <span class="mono font-bold">02</span>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold">Стратегия тестов</h3>
+                    <p class="mt-2 text-white/65">
+                      Матрица гипотез: офферы, креативы, аудитории, лендинги. Приоритет по ожидаемому эффекту.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
+                <div class="flex items-start gap-4">
+                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
+                       style="background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(34,211,238,.12));">
+                    <span class="mono font-bold">03</span>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold">Запуск & оптимизация</h3>
+                    <p class="mt-2 text-white/65">
+                      Настраиваем события, запускаем тестовый бюджет, быстро режем слабое, усиливаем сильное.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
+                <div class="flex items-start gap-4">
+                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
+                       style="background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.12));">
+                    <span class="mono font-bold">04</span>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold">Масштабирование</h3>
+                    <p class="mt-2 text-white/65">
+                      Добавляем объем без потери качества: новые сегменты, креативные серии, ретеншн и CRM.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing / Format -->
+    <section id="pricing" class="py-20 md:py-28 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="mono text-xs tracking-widest text-white/55 uppercase">Формат</div>
+        <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Выберите режим работы</h2>
+        <p class="mt-4 text-white/65 max-w-2xl">
+          Тарифы — пример. Замените под вашу экономику. Важнее не «дешево/дорого», а окупаемость.
+        </p>
+
+        <div class="mt-12 grid lg:grid-cols-3 gap-6">
+          <div class="glass rounded-3xl border border-white/10 p-7 shadow-glow">
+            <div class="mono text-xs text-white/55">START</div>
+            <div class="mt-2 text-2xl font-extrabold">Аудит + план</div>
+            <p class="mt-3 text-white/65">Разовая работа: найти утечки и дать четкий roadmap.</p>
+            <ul class="mt-6 space-y-2 text-sm text-white/70">
+              <li class="flex gap-2"><span class="text-white/35">•</span> диагностика экономики</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> карта тестов на 30 дней</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> рекомендации по воронке</li>
+            </ul>
+            <a href="#contact" class="mt-7 btn inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-semibold glass border border-white/10 hover:border-white/20 transition">
+              Запросить
+            </a>
+          </div>
+
+          <div class="glass rounded-3xl border border-white/10 p-7 shadow-glow relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-30"
+                 style="background: linear-gradient(135deg, var(--accent), var(--accent2));"></div>
+            <div class="flex items-center justify-between">
+              <div class="mono text-xs text-white/55">GROWTH</div>
+              <span class="mono text-[11px] px-2 py-1 rounded-full border border-white/10 glass text-white/70">POPULAR</span>
+            </div>
+            <div class="mt-2 text-2xl font-extrabold">Спринты 4 недели</div>
+            <p class="mt-3 text-white/65">Плотная работа «под ключ»: трафик + креатив + аналитика.</p>
+            <ul class="mt-6 space-y-2 text-sm text-white/70">
+              <li class="flex gap-2"><span class="text-white/35">•</span> 4 спринта тестов</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> креативная матрица</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> отчетность и дашборд</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> оптимизация воронки</li>
+            </ul>
+            <a href="#contact"
+               class="mt-7 btn inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-semibold text-black"
+               style="background: linear-gradient(135deg, var(--accent2), var(--accent));">
+              Обсудить проект
+            </a>
+          </div>
+
+          <div class="glass rounded-3xl border border-white/10 p-7 shadow-glow">
+            <div class="mono text-xs text-white/55">PARTNER</div>
+            <div class="mt-2 text-2xl font-extrabold">Долгосрочно</div>
+            <p class="mt-3 text-white/65">Если вы готовы масштабироваться 3–6 месяцев и строить систему.</p>
+            <ul class="mt-6 space-y-2 text-sm text-white/70">
+              <li class="flex gap-2"><span class="text-white/35">•</span> growth squad</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> CRM + ретеншн</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> продюсирование контента</li>
+              <li class="flex gap-2"><span class="text-white/35">•</span> стратегия по марже</li>
+            </ul>
+            <a href="#contact" class="mt-7 btn inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-semibold glass border border-white/10 hover:border-white/20 transition">
+              Узнать условия
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="py-20 md:py-28 border-t border-white/10">
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="grid lg:grid-cols-12 gap-10">
+          <div class="lg:col-span-5">
+            <div class="mono text-xs tracking-widest text-white/55 uppercase">FAQ</div>
+            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Частые вопросы</h2>
+            <p class="mt-4 text-white/65">
+              Коротко и по делу. Если нужен разбор именно вашей ситуации — лучше созвон.
+            </p>
+          </div>
+
+          <div class="lg:col-span-7 space-y-4">
+            <details class="glass rounded-2xl border border-white/10 p-6 group">
+              <summary class="cursor-pointer list-none flex items-center justify-between gap-4">
+                <span class="font-semibold">Сколько нужен рекламный бюджет, чтобы начать?</span>
+                <span class="h-9 w-9 rounded-xl glass border border-white/10 flex items-center justify-center group-open:rotate-180 transition">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </span>
+              </summary>
+              <p class="mt-4 text-white/65 leading-relaxed">
+                Старт зависит от чека и конверсий. Как правило, мы рекомендуем бюджет, который позволяет собрать
+                статистику за 7–10 дней (иначе алгоритмы «слепые»). На аудите посчитаем минимально жизнеспособный объем.
+              </p>
+            </details>
+
+            <details class="glass rounded-2xl border border-white/10 p-6 group">
+              <summary class="cursor-pointer list-none flex items-center justify-between gap-4">
+                <span class="font-semibold">Вы даете гарантии по продажам?</span>
+                <span class="h-9 w-9 rounded-xl glass border border-white/10 flex items-center justify-center group-open:rotate-180 transition">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </span>
+              </summary>
+              <p class="mt-4 text-white/65 leading-relaxed">
+                Мы гарантируем прозрачный процесс, корректную настройку и управление тестами по данным.
+                Прогноз по продажам делаем после первичных тестов, когда видим реальную экономику и конверсии.
+              </p>
+            </details>
+
+            <details class="glass rounded-2xl border border-white/10 p-6 group">
+              <summary class="cursor-pointer list-none flex items-center justify-between gap-4">
+                <span class="font-semibold">Кто будет делать креативы?</span>
+                <span class="h-9 w-9 rounded-xl glass border border-white/10 flex items-center justify-center group-open:rotate-180 transition">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </span>
+              </summary>
+              <p class="mt-4 text-white/65 leading-relaxed">
+                У нас конвейер: стратегия → сценарии → монтаж/моушн → тест → итерации. Если у вас есть продакшн —
+                интегрируемся и дадим ТЗ/матрицу, чтобы контент «продавал», а не просто выглядел красиво.
+              </p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="py-20 md:py-28 border-t border-white/10 relative overflow-hidden">
+      <div class="blob w-[560px] h-[560px] -top-40 right-[-220px]" style="background: var(--accent); opacity:.16;"></div>
+
+      <div class="mx-auto max-w-7xl px-6">
+        <div class="glass rounded-[28px] border border-white/10 p-7 md:p-10 shadow-glow">
+          <div class="grid lg:grid-cols-12 gap-10 items-start">
+            <div class="lg:col-span-6">
+              <div class="mono text-xs tracking-widest text-white/55 uppercase">Контакт</div>
+              <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Давайте соберем план роста</h2>
+              <p class="mt-4 text-white/65 leading-relaxed">
+                Оставьте заявку — вернемся с вопросами и предложим 2–3 сценария масштабирования.
+              </p>
+
+              <div class="mt-8 grid sm:grid-cols-2 gap-4">
+                <div class="glass rounded-2xl border border-white/10 p-5">
+                  <div class="mono text-xs text-white/55">Ответ</div>
+                  <div class="mt-1 font-semibold">в течение дня</div>
+                </div>
+                <div class="glass rounded-2xl border border-white/10 p-5">
+                  <div class="mono text-xs text-white/55">Формат</div>
+                  <div class="mt-1 font-semibold">15–25 минут</div>
+                </div>
+              </div>
+
+              <div class="mt-8 text-sm text-white/60">
+                <div class="mono text-xs text-white/55">Или напишите сразу:</div>
+                <div class="mt-2 flex flex-wrap gap-3">
+                  <a class="btn inline-flex items-center gap-2 rounded-2xl px-4 py-3 glass border border-white/10 hover:border-white/20 transition"
+                     href="https://wa.me/7066377126" target="_blank" rel="noreferrer">
+                    WhatsApp
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+                    </svg>
+                  </a>
+                  <a class="btn inline-flex items-center gap-2 rounded-2xl px-4 py-3 glass border border-white/10 hover:border-white/20 transition"
+                     href="mailto:hello@novastudio.com">
+                    Email
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="lg:col-span-6">
+              <!-- Pure frontend form (placeholder). Hook it to your backend as needed. -->
+              <form class="grid gap-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                  <label class="grid gap-2">
+                    <span class="mono text-xs text-white/55">Имя</span>
+                    <input required
+                      class="h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-white placeholder:text-white/35 focus:border-white/20"
+                      placeholder="Как к вам обращаться?" />
+                  </label>
+                  <label class="grid gap-2">
+                    <span class="mono text-xs text-white/55">Телефон / Telegram</span>
+                    <input required
+                      class="h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-white placeholder:text-white/35 focus:border-white/20"
+                      placeholder="+7 (___) ___-__-__" />
+                  </label>
+                </div>
+
+                <label class="grid gap-2">
+                  <span class="mono text-xs text-white/55">О проекте</span>
+                  <textarea rows="4"
+                    class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/35 focus:border-white/20"
+                    placeholder="Ниша, средний чек, что уже пробовали, цель на 1–3 месяца"></textarea>
+                </label>
+
+                <button type="button"
+                  class="btn inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold text-black"
+                  style="background: linear-gradient(135deg, var(--accent2), var(--accent));">
+                  Отправить заявку
+                </button>
+
+                <p class="text-xs text-white/45">
+                  Нажимая «Отправить», вы соглашаетесь на обработку данных. (Текст можно заменить на ваш.)
+                </p>
+              </form>
+            </div>
+          </div>
+
+          <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/55">
+            <p>© 2026 NOVA Growth Studio. Almaty / Remote.</p>
+            <p class="mono text-xs">Made for speed • No heavy UI frameworks</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Mobile menu
+    const mobileBtn = document.getElementById('mobileBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Lightweight animated background (particles + gradient glow)
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let w, h, dpr;
+    function resize(){
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      w = canvas.width  = Math.floor(window.innerWidth  * dpr);
+      h = canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+    }
+    window.addEventListener('resize', resize, { passive:true });
+    resize();
+
+    const N = 78;
+    const pts = Array.from({length:N}, () => ({
+      x: Math.random()*w,
+      y: Math.random()*h,
+      vx: (Math.random()-0.5)*0.18*dpr,
+      vy: (Math.random()-0.5)*0.18*dpr,
+      r: (Math.random()*1.8 + 0.6)*dpr,
+      t: Math.random()
+    }));
+
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+
+      // soft vignette
+      const g = ctx.createRadialGradient(w*0.5, h*0.2, 0, w*0.5, h*0.2, Math.max(w,h));
+      g.addColorStop(0, 'rgba(124,58,237,0.10)');
+      g.addColorStop(0.5, 'rgba(34,211,238,0.07)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,w,h);
+
+      // connections
+      ctx.lineWidth = 1 * dpr;
+      for(let i=0;i<N;i++){
+        const a = pts[i];
+        a.x += a.vx; a.y += a.vy;
+        if(a.x<0 || a.x>w) a.vx *= -1;
+        if(a.y<0 || a.y>h) a.vy *= -1;
+
+        for(let j=i+1;j<N;j++){
+          const b = pts[j];
+          const dx = a.x-b.x, dy=a.y-b.y;
+          const dist = Math.sqrt(dx*dx+dy*dy);
+          if(dist < 140*dpr){
+            const alpha = (1 - dist/(140*dpr)) * 0.22;
+            ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x,a.y);
+            ctx.lineTo(b.x,b.y);
+            ctx.stroke();
+          }
         }
-        requestAnimationFrame(raf);
+      }
 
-        // --- 2. NEW CANVAS ANIMATION (Star Field / Network Effect) ---
-        const canvas = document.getElementById('canvas-container');
-        const ctx = canvas.getContext('2d');
-        let width, height;
+      // points
+      for(const p of pts){
+        const accent = p.t > 0.92;
+        ctx.fillStyle = accent ? 'rgba(34,211,238,0.75)' : 'rgba(255,255,255,0.35)';
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fill();
+      }
 
-        function resizeCanvas() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
+      requestAnimationFrame(draw);
+    }
+    draw();
 
-        const dots = [];
-        const DOT_COUNT = 70; 
+    // GSAP reveals (optional)
+    if (window.gsap) {
+      gsap.registerPlugin(ScrollTrigger);
 
-        class Dot {
-            constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                // Slower movement for better performance
-                this.vx = (Math.random() - 0.5) * 0.1; 
-                this.vy = (Math.random() - 0.5) * 0.1;
-                this.size = Math.random() * 2 + 0.5;
-                // Use muted tones and accent color
-                this.color = Math.random() > 0.9 ? '#FF5C00' : '#30363d';
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                
-                // Keep dots within bounds (bouncing effect)
-                if (this.x < 0 || this.x > width) this.vx *= -1;
-                if (this.y < 0 || this.y > height) this.vy *= -1;
-            }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
+      gsap.from("h1, .hero-card, .hero-content", {
+        opacity: 0,
+        y: 20,
+        duration: 1,
+        stagger: 0.08,
+        ease: "power3.out"
+      });
 
-        for (let i = 0; i < DOT_COUNT; i++) dots.push(new Dot());
-
-        function animateCanvas() {
-            ctx.clearRect(0, 0, width, height);
-            
-            // Draw connections (subtle network effect)
-            ctx.strokeStyle = 'rgba(48, 54, 61, 0.2)'; // Very subtle lines
-            ctx.lineWidth = 0.5;
-            
-            for (let i = 0; i < dots.length; i++) {
-                dots[i].update();
-                dots[i].draw();
-                
-                for (let j = i; j < dots.length; j++) {
-                    const dx = dots[i].x - dots[j].x;
-                    const dy = dots[i].y - dots[j].y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    
-                    if (dist < 100) { // Limit connection distance for performance
-                        ctx.beginPath();
-                        ctx.moveTo(dots[i].x, dots[i].y);
-                        ctx.lineTo(dots[j].x, dots[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animateCanvas);
-        }
-        animateCanvas();
-
-
-        // --- 3. GSAP ANIMATIONS ---
-        gsap.registerPlugin(ScrollTrigger);
-
-        // Hero Reveal
-        const tl = gsap.timeline();
-        tl.from(".reveal-text", {
-            y: 100,
-            opacity: 0,
-            duration: 1.5,
-            stagger: 0.2,
-            ease: "power4.out"
-        })
-        .from(".hero-p", { opacity: 0, y: 20, duration: 1 }, "-=1")
-        .from(".hero-btns", { opacity: 0, y: 20, duration: 1 }, "-=0.8");
-
-        // Counter Animation
-        const counters = document.querySelectorAll('.counter');
-        counters.forEach(counter => {
-            const target = +counter.getAttribute('data-target');
-            gsap.to(counter, {
-                innerHTML: target,
-                duration: 2,
-                snap: { innerHTML: 1 },
-                scrollTrigger: {
-                    trigger: counter,
-                    start: "top 85%",
-                    once: true
-                }
-            });
+      gsap.utils.toArray("section").forEach((sec) => {
+        gsap.from(sec.querySelectorAll("h2, h3, p, article, .glass"), {
+          opacity: 0,
+          y: 26,
+          duration: 0.9,
+          stagger: 0.05,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: sec,
+            start: "top 78%",
+            once: true
+          }
         });
-
-        // Animation of Bento Cards
-        gsap.from("#solutions .glass", {
-            y: 50,
-            opacity: 0,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: "power2.out",
-            scrollTrigger: {
-                trigger: "#solutions",
-                start: "top 80%",
-                once: true
-            }
-        });
-
-        // INTERACTIVE TIMELINE (PROCESS) - NO CHANGES NEEDED, IT'S PERFORMANT
-        // Анимация линии
-        gsap.to("#scroll-line", {
-            height: "100%",
-            ease: "none",
-            scrollTrigger: {
-                trigger: "#methodology",
-                start: "top 60%", 
-                end: "bottom 60%",
-                scrub: 0.5
-            }
-        });
-
-        // Анимация точек (шагов)
-        gsap.utils.toArray(".step-item").forEach((step) => {
-            const dot = step.querySelector(".step-dot");
-            const text = step.querySelector("span");
-            
-            gsap.to(dot, {
-                borderColor: "#FF5C00",
-                backgroundColor: "#161b22",
-                boxShadow: "0 0 15px rgba(255, 92, 0, 0.5)",
-                scrollTrigger: {
-                    trigger: step,
-                    start: "top 60%",
-                    end: "bottom 60%",
-                    toggleActions: "play reverse play reverse"
-                }
-            });
-            
-            gsap.to(text, {
-                color: "#FF5C00",
-                scrollTrigger: {
-                    trigger: step,
-                    start: "top 60%",
-                    end: "bottom 60%",
-                    toggleActions: "play reverse play reverse"
-                }
-            });
-        });
-    </script>
+      });
+    }
+  </script>
 </body>
 </html>
