@@ -1,985 +1,1427 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NOVA GROWTH STUDIO — Performance & Brand Systems</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus — Цифровые решения нового уровня</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #111113;
+    --surface2: #1A1A1E;
+    --gold: #C9A96E;
+    --gold-light: #E8D5B0;
+    --gold-dim: #7A6540;
+    --text: #F0EDE8;
+    --text-muted: #888880;
+    --text-dim: #444440;
+    --border: rgba(201,169,110,0.15);
+    --border-subtle: rgba(255,255,255,0.06);
+  }
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  html { scroll-behavior: smooth; cursor: none; }
 
-  <!-- Animations (optional but nice) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
 
-  <style>
-    :root{
-      --bg:#070A12;
-      --card: rgba(255,255,255,.06);
-      --stroke: rgba(255,255,255,.10);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.62);
-      --muted2: rgba(255,255,255,.44);
-      --accent:#7C3AED;   /* violet */
-      --accent2:#22D3EE;  /* cyan */
-      --accent3:#F97316;  /* orange */
-      --glow: rgba(124,58,237,.35);
-    }
-    html,body{height:100%;}
-    body{
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      overflow-x:hidden;
-    }
-    .mono{font-family:"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    .glass{
-      background: var(--card);
-      border: 1px solid var(--stroke);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-    .btn{
-      position:relative;
-      overflow:hidden;
-      transform: translateZ(0);
-    }
-    .btn::after{
-      content:"";
-      position:absolute; inset:-40%;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.20), transparent 55%);
-      opacity:0;
-      transition:opacity .35s ease;
-      pointer-events:none;
-    }
-    .btn:hover::after{opacity:1;}
-    .shine{
-      position:relative;
-      overflow:hidden;
-    }
-    .shine:before{
-      content:"";
-      position:absolute; top:-120%; left:-120%;
-      width:240%; height:240%;
-      background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,.10), transparent 60%);
-      transform: rotate(12deg);
-      animation: sweep 7s linear infinite;
-      pointer-events:none;
-      opacity:.35;
-    }
-    @keyframes sweep{
-      0%{transform: translate(-30%, -30%) rotate(12deg);}
-      100%{transform: translate(30%, 30%) rotate(12deg);}
-    }
+  /* ── CURSOR ── */
+  #cursor {
+    position: fixed; width: 10px; height: 10px;
+    background: var(--gold); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+    mix-blend-mode: difference;
+  }
+  #cursor-ring {
+    position: fixed; width: 36px; height: 36px;
+    border: 1px solid rgba(201,169,110,0.5);
+    border-radius: 50%; pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.15s ease, width 0.3s, height 0.3s, opacity 0.3s;
+  }
+  body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring {
+    width: 60px; height: 60px; opacity: 0.6;
+  }
 
-    /* Background */
-    #bg-canvas{
-      position:fixed; inset:0;
-      z-index:-3;
-      opacity:.85;
-      pointer-events:none;
-    }
-    .grid{
-      position:fixed; inset:0;
-      z-index:-2;
-      pointer-events:none;
-      background-image:
-        linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-      background-size: 72px 72px;
-      mask-image: radial-gradient(circle at 50% 25%, black 28%, transparent 72%);
-      opacity:.45;
-    }
-    .noise{
-      position:fixed; inset:0;
-      z-index:-1;
-      pointer-events:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-      mix-blend-mode: overlay;
-      opacity:.25;
-    }
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 1000;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025; pointer-events: none;
+  }
 
-    /* Soft gradient blobs */
-    .blob{
-      position:absolute; border-radius:999px;
-      filter: blur(80px);
-      opacity:.20;
-      transform: translateZ(0);
-      pointer-events:none;
-    }
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 28px 60px;
+    transition: padding 0.4s, background 0.4s, border-bottom 0.4s;
+  }
+  nav.scrolled {
+    padding: 18px 60px;
+    background: rgba(8,8,8,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .nav-logo {
+    font-family: 'Cormorant', serif;
+    font-size: 28px; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--text); text-decoration: none;
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a {
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    transition: color 0.3s; position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px; background: var(--gold);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-cta {
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--bg); background: var(--gold);
+    padding: 12px 28px; text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+    font-family: 'Outfit', sans-serif; font-weight: 500;
+  }
+  .nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
 
-    /* Better focus states */
-    a, button, summary { outline: none; }
-    :focus-visible{
-      outline: 2px solid rgba(34,211,238,.8);
-      outline-offset: 3px;
-      border-radius: 10px;
-    }
-  </style>
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    justify-content: center; position: relative;
+    padding: 120px 60px 80px;
+    overflow: hidden;
+  }
+  .hero-bg-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute; width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(201,169,110,0.08) 0%, transparent 70%);
+    top: 50%; left: 30%; transform: translate(-50%,-50%);
+    pointer-events: none; z-index: 0;
+    animation: glowPulse 6s ease-in-out infinite;
+  }
+  @keyframes glowPulse {
+    0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  }
+  .hero-tag {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 36px;
+    opacity: 0; animation: fadeUp 0.8s 0.3s forwards;
+  }
+  .hero-tag::before {
+    content: ''; display: block; width: 40px; height: 1px;
+    background: var(--gold);
+  }
+  .hero-headline {
+    position: relative; z-index: 1;
+    font-family: 'Cormorant', serif;
+    font-size: clamp(72px, 9vw, 140px);
+    font-weight: 300; line-height: 0.92;
+    letter-spacing: -0.01em;
+    margin-bottom: 48px;
+  }
+  .hero-headline .line {
+    display: block; overflow: hidden;
+  }
+  .hero-headline .line span {
+    display: block;
+    opacity: 0; transform: translateY(100%);
+    animation: slideUp 0.9s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .hero-headline .line:nth-child(1) span { animation-delay: 0.5s; }
+  .hero-headline .line:nth-child(2) span { animation-delay: 0.65s; }
+  .hero-headline .line:nth-child(3) span { animation-delay: 0.8s; }
+  .hero-headline em {
+    font-style: italic; color: var(--gold);
+    font-weight: 300;
+  }
+  .hero-desc {
+    position: relative; z-index: 1;
+    max-width: 520px; font-size: 17px;
+    color: var(--text-muted); line-height: 1.7;
+    margin-bottom: 56px;
+    opacity: 0; animation: fadeUp 0.9s 1.1s forwards;
+  }
+  .hero-actions {
+    position: relative; z-index: 1;
+    display: flex; align-items: center; gap: 36px;
+    opacity: 0; animation: fadeUp 0.9s 1.3s forwards;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: var(--gold); color: var(--bg);
+    font-family: 'Outfit', sans-serif; font-size: 13px;
+    font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    text-decoration: none; padding: 18px 40px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--gold-light); transform: translateX(-101%);
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span, .btn-primary svg { position: relative; z-index: 1; }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-ghost {
+    font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+    transition: color 0.3s;
+  }
+  .btn-ghost:hover { color: var(--text); }
+  .hero-stats {
+    position: absolute; right: 60px; bottom: 80px;
+    display: flex; gap: 48px; z-index: 1;
+    opacity: 0; animation: fadeUp 0.9s 1.5s forwards;
+  }
+  .hero-stat-item { text-align: right; }
+  .hero-stat-num {
+    font-family: 'Cormorant', serif; font-size: 52px;
+    font-weight: 300; color: var(--text); line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .hero-stat-num span { color: var(--gold); }
+  .hero-stat-label {
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); margin-top: 4px;
+  }
+  .hero-scroll {
+    position: absolute; left: 60px; bottom: 80px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim); z-index: 1;
+    opacity: 0; animation: fadeUp 0.9s 1.7s forwards;
+  }
+  .scroll-line {
+    width: 1px; height: 60px; background: var(--gold-dim);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: ''; position: absolute; top: -100%;
+    width: 100%; height: 100%; background: var(--gold);
+    animation: scrollDrop 2s 2s infinite;
+  }
+  @keyframes scrollDrop {
+    0% { top: -100%; } 100% { top: 100%; }
+  }
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          boxShadow: {
-            glow: "0 0 0 1px rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.55)",
-            neon: "0 0 35px rgba(124,58,237,.30)"
-          }
-        }
-      }
-    }
-  </script>
+  /* ── MARQUEE ── */
+  .marquee-wrap {
+    overflow: hidden; border-top: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 22px 0; background: var(--surface);
+  }
+  .marquee-track {
+    display: flex; gap: 0; white-space: nowrap;
+    animation: marquee 30s linear infinite;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-item {
+    display: inline-flex; align-items: center; gap: 28px;
+    padding: 0 32px;
+    font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .marquee-item span { color: var(--gold); font-size: 18px; line-height: 1; }
+
+  /* ── SECTION BASE ── */
+  section { padding: 120px 60px; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 24px;
+  }
+  .section-label::before {
+    content: ''; width: 30px; height: 1px; background: var(--gold);
+  }
+  .section-title {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(44px, 5.5vw, 80px);
+    font-weight: 300; line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  /* ── SERVICES ── */
+  #services { background: var(--surface); }
+  .services-header {
+    display: flex; justify-content: space-between;
+    align-items: flex-end; margin-bottom: 80px;
+  }
+  .services-header-right {
+    max-width: 360px; color: var(--text-muted);
+    font-size: 16px; line-height: 1.7;
+  }
+  .services-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  }
+  .service-card {
+    background: var(--bg); padding: 48px 40px;
+    position: relative; overflow: hidden;
+    transition: background 0.4s;
+    display: flex; flex-direction: column; gap: 24px;
+    cursor: none;
+  }
+  .service-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,169,110,0.05) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .service-card:hover { background: #0E0E10; }
+  .service-card:hover::before { opacity: 1; }
+  .service-num {
+    font-family: 'Cormorant', serif; font-size: 72px;
+    font-weight: 300; color: var(--text-dim); line-height: 1;
+    position: absolute; top: 32px; right: 36px;
+    transition: color 0.4s;
+  }
+  .service-card:hover .service-num { color: rgba(201,169,110,0.2); }
+  .service-icon {
+    width: 48px; height: 48px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); flex-shrink: 0;
+    transition: border-color 0.4s, background 0.4s;
+  }
+  .service-card:hover .service-icon {
+    background: rgba(201,169,110,0.08); border-color: var(--gold);
+  }
+  .service-name {
+    font-family: 'Cormorant', serif; font-size: 28px;
+    font-weight: 400; line-height: 1.2;
+  }
+  .service-desc {
+    font-size: 14px; color: var(--text-muted); line-height: 1.8; flex: 1;
+  }
+  .service-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .service-tag {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 5px 12px; border: 1px solid var(--border-subtle);
+    color: var(--text-dim);
+  }
+  .service-arrow {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); margin-top: 8px;
+    transition: color 0.3s; text-decoration: none;
+  }
+  .service-arrow svg { transition: transform 0.3s; }
+  .service-card:hover .service-arrow { color: var(--gold); }
+  .service-card:hover .service-arrow svg { transform: translate(4px,-4px); }
+
+  /* ── PROCESS ── */
+  #process { background: var(--bg); }
+  .process-header { margin-bottom: 80px; }
+  .process-list { display: flex; flex-direction: column; }
+  .process-item {
+    display: grid; grid-template-columns: 80px 1fr auto;
+    align-items: start; gap: 40px;
+    padding: 44px 0; border-bottom: 1px solid var(--border-subtle);
+    position: relative; overflow: hidden;
+    transition: padding-left 0.4s;
+    cursor: none;
+  }
+  .process-item::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 0; background: var(--border-subtle);
+    transition: width 0.4s;
+  }
+  .process-item:hover::before { width: 3px; }
+  .process-item:first-child { border-top: 1px solid var(--border-subtle); }
+  .process-step-num {
+    font-family: 'Cormorant', serif; font-size: 20px;
+    font-weight: 300; color: var(--text-dim); padding-top: 4px;
+    transition: color 0.3s;
+  }
+  .process-item:hover .process-step-num { color: var(--gold); }
+  .process-content {}
+  .process-name {
+    font-family: 'Cormorant', serif; font-size: 36px;
+    font-weight: 400; margin-bottom: 12px; line-height: 1.1;
+    transition: color 0.3s;
+  }
+  .process-item:hover .process-name { color: var(--gold); }
+  .process-desc {
+    font-size: 15px; color: var(--text-muted); line-height: 1.8;
+    max-width: 560px;
+  }
+  .process-duration {
+    font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); white-space: nowrap; padding-top: 8px;
+    text-align: right;
+  }
+
+  /* ── WHY US ── */
+  #why { background: var(--surface); }
+  .why-layout {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center;
+  }
+  .why-left .section-title { margin-bottom: 32px; }
+  .why-body {
+    font-size: 16px; color: var(--text-muted); line-height: 1.8;
+    margin-bottom: 48px;
+  }
+  .why-features { display: flex; flex-direction: column; gap: 20px; }
+  .why-feat {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 24px; border: 1px solid var(--border-subtle);
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .why-feat:hover {
+    border-color: var(--border); background: rgba(201,169,110,0.03);
+  }
+  .why-feat-icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+  }
+  .why-feat-text strong {
+    display: block; font-weight: 500; margin-bottom: 4px;
+    font-size: 15px;
+  }
+  .why-feat-text span { font-size: 13px; color: var(--text-muted); }
+  .why-right {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .metric-card {
+    background: var(--bg); padding: 48px 36px;
+    text-align: center;
+    transition: background 0.3s;
+  }
+  .metric-card:hover { background: #0C0C0E; }
+  .metric-card:nth-child(2) { background: rgba(201,169,110,0.06); }
+  .metric-num {
+    font-family: 'Cormorant', serif; font-size: 72px;
+    font-weight: 300; line-height: 1; color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .metric-num sup {
+    font-size: 32px; color: var(--gold); vertical-align: super;
+  }
+  .metric-label {
+    font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-dim); margin-top: 12px;
+  }
+  .metric-sub {
+    font-size: 13px; color: var(--text-muted); margin-top: 8px;
+    line-height: 1.5;
+  }
+
+  /* ── PRICING ── */
+  #pricing { background: var(--bg); }
+  .pricing-header { text-align: center; margin-bottom: 80px; }
+  .pricing-header .section-label { justify-content: center; }
+  .pricing-header .section-label::before { display: none; }
+  .pricing-header .section-label::after {
+    content: ''; width: 30px; height: 1px; background: var(--gold);
+  }
+  .pricing-sub {
+    font-size: 17px; color: var(--text-muted); margin-top: 20px;
+    max-width: 500px; margin-left: auto; margin-right: auto;
+  }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+  }
+  .pricing-card {
+    background: var(--surface); padding: 52px 44px;
+    position: relative; transition: transform 0.3s;
+    display: flex; flex-direction: column;
+  }
+  .pricing-card.featured {
+    background: var(--gold); transform: scaleY(1.02);
+    z-index: 2;
+  }
+  .pricing-card:hover { transform: translateY(-4px); }
+  .pricing-card.featured:hover { transform: scaleY(1.02) translateY(-4px); }
+  .pricing-tier {
+    font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 24px;
+  }
+  .pricing-card.featured .pricing-tier { color: rgba(8,8,8,0.6); }
+  .pricing-price {
+    font-family: 'Cormorant', serif; font-size: 64px;
+    font-weight: 300; line-height: 1; margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .pricing-card.featured .pricing-price { color: var(--bg); }
+  .pricing-price-note {
+    font-size: 13px; color: var(--text-muted); margin-bottom: 36px;
+  }
+  .pricing-card.featured .pricing-price-note { color: rgba(8,8,8,0.6); }
+  .pricing-divider {
+    height: 1px; background: var(--border-subtle); margin-bottom: 36px;
+  }
+  .pricing-card.featured .pricing-divider { background: rgba(8,8,8,0.15); }
+  .pricing-features {
+    list-style: none; display: flex; flex-direction: column;
+    gap: 14px; flex: 1;
+  }
+  .pricing-features li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 14px; color: var(--text-muted); line-height: 1.5;
+  }
+  .pricing-card.featured .pricing-features li { color: rgba(8,8,8,0.75); }
+  .pricing-features li svg { flex-shrink: 0; margin-top: 2px; }
+  .pricing-btn {
+    display: block; text-align: center; margin-top: 44px;
+    padding: 16px 32px; text-decoration: none;
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 500; transition: all 0.3s;
+  }
+  .pricing-btn-outline {
+    border: 1px solid var(--border); color: var(--text);
+    background: transparent;
+  }
+  .pricing-btn-outline:hover {
+    border-color: var(--gold); color: var(--gold);
+    background: rgba(201,169,110,0.05);
+  }
+  .pricing-btn-dark {
+    background: var(--bg); color: var(--text);
+  }
+  .pricing-btn-dark:hover { background: #111; }
+  .pricing-badge {
+    position: absolute; top: -14px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg); color: var(--gold);
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 6px 16px; border: 1px solid var(--gold);
+  }
+
+  /* ── FAQ ── */
+  #faq { background: var(--surface); }
+  .faq-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 100px; align-items: start; }
+  .faq-list { display: flex; flex-direction: column; }
+  .faq-item {
+    border-bottom: 1px solid var(--border-subtle); overflow: hidden;
+  }
+  .faq-question {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 28px 0; cursor: none;
+    font-size: 17px; font-weight: 400;
+    transition: color 0.3s; user-select: none;
+  }
+  .faq-question:hover { color: var(--gold); }
+  .faq-icon {
+    width: 28px; height: 28px; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: transform 0.4s, border-color 0.3s, background 0.3s;
+    color: var(--text-muted);
+  }
+  .faq-item.open .faq-icon {
+    transform: rotate(45deg); border-color: var(--gold);
+    background: rgba(201,169,110,0.08); color: var(--gold);
+  }
+  .faq-answer {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.16,1,0.3,1), padding 0.4s;
+  }
+  .faq-answer-inner {
+    font-size: 15px; color: var(--text-muted); line-height: 1.8;
+    padding-bottom: 28px;
+  }
+  .faq-item.open .faq-answer { max-height: 300px; }
+
+  /* ── CTA ── */
+  #cta {
+    background: var(--bg); padding: 140px 60px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 80%);
+  }
+  .cta-glow {
+    position: absolute; width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    pointer-events: none;
+  }
+  #cta .section-label { justify-content: center; margin-bottom: 28px; }
+  #cta .section-label::before { display: none; }
+  #cta .section-label::after { content: ''; width: 30px; height: 1px; background: var(--gold); }
+  .cta-title {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(52px, 7vw, 110px);
+    font-weight: 300; line-height: 0.95;
+    margin-bottom: 36px; position: relative; z-index: 1;
+  }
+  .cta-title em { font-style: italic; color: var(--gold); }
+  .cta-sub {
+    font-size: 17px; color: var(--text-muted); margin-bottom: 56px;
+    position: relative; z-index: 1; max-width: 480px;
+    margin-left: auto; margin-right: auto; line-height: 1.7;
+  }
+  .cta-actions {
+    display: flex; align-items: center; justify-content: center;
+    gap: 32px; position: relative; z-index: 1;
+  }
+  .cta-email {
+    font-family: 'Cormorant', serif; font-size: 22px;
+    font-style: italic; color: var(--text-muted); text-decoration: none;
+    border-bottom: 1px solid var(--border); padding-bottom: 4px;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .cta-email:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--surface); padding: 64px 60px 40px;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 60px; padding-bottom: 60px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .footer-brand {}
+  .footer-logo {
+    font-family: 'Cormorant', serif; font-size: 32px;
+    font-weight: 600; letter-spacing: 0.1em;
+    text-decoration: none; color: var(--text);
+    display: block; margin-bottom: 20px;
+  }
+  .footer-logo span { color: var(--gold); }
+  .footer-tagline {
+    font-size: 14px; color: var(--text-muted); line-height: 1.7;
+    margin-bottom: 32px; max-width: 280px;
+  }
+  .footer-socials { display: flex; gap: 12px; }
+  .footer-social {
+    width: 40px; height: 40px; border: 1px solid var(--border-subtle);
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; color: var(--text-muted);
+    transition: all 0.3s; font-size: 14px;
+  }
+  .footer-social:hover {
+    border-color: var(--gold); color: var(--gold);
+    background: rgba(201,169,110,0.05);
+  }
+  .footer-col-title {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 24px;
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-links a {
+    font-size: 14px; color: var(--text-muted); text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--text); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 32px;
+    font-size: 12px; color: var(--text-dim);
+  }
+  .footer-bottom a { color: var(--text-dim); text-decoration: none; }
+  .footer-bottom a:hover { color: var(--text-muted); }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+                transform 0.8s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MOBILE ── */
+  @media (max-width: 900px) {
+    nav { padding: 24px 24px; }
+    nav.scrolled { padding: 16px 24px; }
+    .nav-links { display: none; }
+    #hero { padding: 100px 24px 60px; }
+    .hero-stats { right: 24px; bottom: 60px; gap: 24px; }
+    .hero-stat-num { font-size: 36px; }
+    .hero-scroll { display: none; }
+    section { padding: 80px 24px; }
+    .services-header { flex-direction: column; gap: 24px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .why-layout { grid-template-columns: 1fr; gap: 48px; }
+    .why-right { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-card.featured { transform: none; }
+    .faq-layout { grid-template-columns: 1fr; gap: 40px; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .cta-actions { flex-direction: column; gap: 20px; }
+    .process-item { grid-template-columns: 48px 1fr; }
+    .process-duration { display: none; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
 </head>
+<body>
 
-<body class="antialiased">
-  <canvas id="bg-canvas"></canvas>
-  <div class="grid"></div>
-  <div class="noise"></div>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
 
-  <!-- Header -->
-  <header class="fixed top-0 left-0 right-0 z-50">
-    <div class="mx-auto max-w-7xl px-6">
-      <div class="mt-4 glass rounded-2xl shadow-glow">
-        <div class="h-16 px-4 md:px-6 flex items-center justify-between">
-          <a href="#top" class="flex items-center gap-3">
-            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl glass border border-white/10">
-              <span class="h-2.5 w-2.5 rounded-full" style="background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow:0 0 18px var(--glow)"></span>
-            </span>
-            <div class="leading-tight">
-              <div class="font-extrabold tracking-tight">NOVA<span class="text-white/55">.STUDIO</span></div>
-              <div class="mono text-[10px] text-white/45 -mt-0.5">PERFORMANCE • BRAND • SYSTEMS</div>
-            </div>
-          </a>
+<!-- ── NAV ── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">FORM<span>A</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">Услуги</a></li>
+    <li><a href="#process">Процесс</a></li>
+    <li><a href="#pricing">Стоимость</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Обсудить проект</a>
+</nav>
 
-          <nav class="hidden md:flex items-center gap-7 text-sm text-white/60">
-            <a class="hover:text-white transition" href="#services">Услуги</a>
-            <a class="hover:text-white transition" href="#cases">Кейсы</a>
-            <a class="hover:text-white transition" href="#process">Процесс</a>
-            <a class="hover:text-white transition" href="#pricing">Формат</a>
-            <a class="hover:text-white transition" href="#faq">FAQ</a>
-          </nav>
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
 
-          <div class="flex items-center gap-3">
-            <a href="#contact"
-               class="hidden sm:inline-flex btn items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold glass border border-white/10 hover:border-white/20 transition">
-              Получить аудит
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M7 17L17 7"/><path d="M7 7h10v10"/>
-              </svg>
-            </a>
+  <div class="hero-tag">Цифровая студия — 2026</div>
 
-            <button id="mobileBtn" class="md:hidden inline-flex items-center justify-center h-10 w-10 rounded-xl glass border border-white/10">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>
-              </svg>
-            </button>
+  <h1 class="hero-headline">
+    <div class="line"><span>Мы создаём</span></div>
+    <div class="line"><span>сайты, которые</span></div>
+    <div class="line"><span><em>работают</em></span></div>
+  </h1>
+
+  <p class="hero-desc">
+    Разрабатываем цифровые продукты, которые превращают посетителей
+    в клиентов. От концепции до запуска — под ключ.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#cta" class="btn-primary">
+      <span>Начать проект</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <a href="#process" class="btn-ghost">
+      Как мы работаем
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1v12M1 7l6 6 6-6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat-item">
+      <div class="hero-stat-num">48<span>ч</span></div>
+      <div class="hero-stat-label">Первый макет</div>
+    </div>
+    <div class="hero-stat-item">
+      <div class="hero-stat-num">100<span>%</span></div>
+      <div class="hero-stat-label">Уникальный дизайн</div>
+    </div>
+    <div class="hero-stat-item">
+      <div class="hero-stat-num">3<span>×</span></div>
+      <div class="hero-stat-label">Рост конверсии</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Скролл
+  </div>
+</section>
+
+<!-- ── MARQUEE ── -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>✦</span> Лендинги</div>
+    <div class="marquee-item"><span>✦</span> Корпоративные сайты</div>
+    <div class="marquee-item"><span>✦</span> Интернет-магазины</div>
+    <div class="marquee-item"><span>✦</span> Веб-приложения</div>
+    <div class="marquee-item"><span>✦</span> UI/UX Дизайн</div>
+    <div class="marquee-item"><span>✦</span> SEO-оптимизация</div>
+    <div class="marquee-item"><span>✦</span> Брендинг</div>
+    <div class="marquee-item"><span>✦</span> Анимация</div>
+    <div class="marquee-item"><span>✦</span> Лендинги</div>
+    <div class="marquee-item"><span>✦</span> Корпоративные сайты</div>
+    <div class="marquee-item"><span>✦</span> Интернет-магазины</div>
+    <div class="marquee-item"><span>✦</span> Веб-приложения</div>
+    <div class="marquee-item"><span>✦</span> UI/UX Дизайн</div>
+    <div class="marquee-item"><span>✦</span> SEO-оптимизация</div>
+    <div class="marquee-item"><span>✦</span> Брендинг</div>
+    <div class="marquee-item"><span>✦</span> Анимация</div>
+  </div>
+</div>
+
+<!-- ── SERVICES ── -->
+<section id="services">
+  <div class="services-header reveal">
+    <div>
+      <div class="section-label">Что мы делаем</div>
+      <h2 class="section-title">Наши<br><em>услуги</em></h2>
+    </div>
+    <p class="services-header-right">
+      Каждый проект — это индивидуальное решение.
+      Мы не используем шаблоны: только уникальный дизайн
+      и технологии, подобранные под вашу задачу.
+    </p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">01</div>
+      <div class="service-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+        </svg>
+      </div>
+      <div class="service-name">Лендинг<br>под ключ</div>
+      <p class="service-desc">Одностраничный продающий сайт с высокой конверсией. Структура, копирайтинг, дизайн и разработка — всё включено.</p>
+      <div class="service-tags">
+        <span class="service-tag">Figma</span>
+        <span class="service-tag">React</span>
+        <span class="service-tag">7–14 дней</span>
+      </div>
+      <a href="#cta" class="service-arrow">
+        Узнать подробнее
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H4M12 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">02</div>
+      <div class="service-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="service-name">Корпоративный<br>сайт</div>
+      <p class="service-desc">Многостраничный сайт компании, который формирует доверие и отражает ценности вашего бренда на высшем уровне.</p>
+      <div class="service-tags">
+        <span class="service-tag">Next.js</span>
+        <span class="service-tag">CMS</span>
+        <span class="service-tag">21–30 дней</span>
+      </div>
+      <a href="#cta" class="service-arrow">
+        Узнать подробнее
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H4M12 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-num">03</div>
+      <div class="service-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </div>
+      <div class="service-name">Интернет-<br>магазин</div>
+      <p class="service-desc">Ecommerce-решение с интеграцией оплаты, логистики и аналитики. Оптимизировано для максимальных продаж.</p>
+      <div class="service-tags">
+        <span class="service-tag">Next.js</span>
+        <span class="service-tag">Stripe</span>
+        <span class="service-tag">30–45 дней</span>
+      </div>
+      <a href="#cta" class="service-arrow">
+        Узнать подробнее
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H4M12 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-num">04</div>
+      <div class="service-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+      </div>
+      <div class="service-name">UI/UX<br>Дизайн</div>
+      <p class="service-desc">Создаём интерфейсы, которыми приятно пользоваться. Глубокое исследование, прототипирование и тестирование.</p>
+      <div class="service-tags">
+        <span class="service-tag">Figma</span>
+        <span class="service-tag">Prototype</span>
+        <span class="service-tag">10–21 день</span>
+      </div>
+      <a href="#cta" class="service-arrow">
+        Узнать подробнее
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H4M12 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-num">05</div>
+      <div class="service-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div class="service-name">SEO &<br>Аналитика</div>
+      <p class="service-desc">Технический SEO-аудит, настройка аналитики, оптимизация скорости. Сайт, который Google ставит на первые позиции.</p>
+      <div class="service-tags">
+        <span class="service-tag">Core Web Vitals</span>
+        <span class="service-tag">GA4</span>
+        <span class="service-tag">7 дней</span>
+      </div>
+      <a href="#cta" class="service-arrow">
+        Узнать подробнее
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H4M12 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-num">06</div>
+      <div class="service-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 1 0 21 12"/>
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
+        </svg>
+      </div>
+      <div class="service-name">Брендинг<br>& Айдентика</div>
+      <p class="service-desc">Логотип, фирменный стиль, гайдлайн бренда. Визуальная идентичность, которая выделяет вас среди конкурентов.</p>
+      <div class="service-tags">
+        <span class="service-tag">Logo</span>
+        <span class="service-tag">Brandbook</span>
+        <span class="service-tag">14–21 день</span>
+      </div>
+      <a href="#cta" class="service-arrow">
+        Узнать подробнее
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 12L12 2M12 2H4M12 2v8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCESS ── -->
+<section id="process">
+  <div class="process-header reveal">
+    <div class="section-label">Как мы работаем</div>
+    <h2 class="section-title">Прозрачный<br><em>процесс</em></h2>
+  </div>
+
+  <div class="process-list">
+    <div class="process-item reveal">
+      <div class="process-step-num">01</div>
+      <div class="process-content">
+        <div class="process-name">Бриф и Discovery</div>
+        <p class="process-desc">Погружаемся в ваш бизнес: изучаем конкурентов, целевую аудиторию, цели. Формируем чёткое техническое задание с метриками успеха. Никаких расплывчатых формулировок — только конкретика.</p>
+      </div>
+      <div class="process-duration">1–2 дня</div>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-step-num">02</div>
+      <div class="process-content">
+        <div class="process-name">Прототип и Концепция</div>
+        <p class="process-desc">Разрабатываем wireframes и концептуальный дизайн в Figma. Вы видите структуру сайта ещё до начала разработки и вносите правки на раннем этапе — это экономит время и деньги.</p>
+      </div>
+      <div class="process-duration">2–5 дней</div>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-step-num">03</div>
+      <div class="process-content">
+        <div class="process-name">Дизайн-система</div>
+        <p class="process-desc">Создаём полноценный дизайн с анимациями, адаптивом и всеми состояниями элементов. Дизайн проходит проверку на удобство использования перед передачей в разработку.</p>
+      </div>
+      <div class="process-duration">5–10 дней</div>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-step-num">04</div>
+      <div class="process-content">
+        <div class="process-name">Разработка</div>
+        <p class="process-desc">Пишем чистый, оптимизированный код на современных технологиях. Регулярные демо каждые 2–3 дня — вы всегда в курсе прогресса и можете оперативно вносить корректировки.</p>
+      </div>
+      <div class="process-duration">7–21 день</div>
+    </div>
+    <div class="process-item reveal">
+      <div class="process-step-num">05</div>
+      <div class="process-content">
+        <div class="process-name">Тестирование и запуск</div>
+        <p class="process-desc">Тестируем на всех устройствах, браузерах и разрешениях. Настраиваем аналитику, SEO, скорость загрузки. Запускаем проект и обеспечиваем поддержку первые 30 дней бесплатно.</p>
+      </div>
+      <div class="process-duration">2–3 дня</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WHY US ── -->
+<section id="why">
+  <div class="why-layout">
+    <div class="why-left reveal">
+      <div class="section-label">Почему мы</div>
+      <h2 class="section-title">Не агентство.<br><em>Партнёры.</em></h2>
+      <p class="why-body">
+        Мы не передаём проекты фрилансерам и не используем
+        шаблонные решения. Каждый проект — это полноценная
+        командная работа с полной ответственностью за результат.
+      </p>
+      <div class="why-features">
+        <div class="why-feat">
+          <div class="why-feat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="why-feat-text">
+            <strong>Фиксированная стоимость</strong>
+            <span>Цена закреплена в договоре. Никаких скрытых платежей и сюрпризов в конце проекта.</span>
           </div>
         </div>
-
-        <!-- Mobile menu -->
-        <div id="mobileMenu" class="md:hidden hidden border-t border-white/10 px-4 py-4">
-          <div class="grid gap-3 text-sm text-white/70">
-            <a class="hover:text-white transition" href="#services">Услуги</a>
-            <a class="hover:text-white transition" href="#cases">Кейсы</a>
-            <a class="hover:text-white transition" href="#process">Процесс</a>
-            <a class="hover:text-white transition" href="#pricing">Формат</a>
-            <a class="hover:text-white transition" href="#faq">FAQ</a>
-            <a class="btn inline-flex items-center justify-center rounded-xl px-4 py-3 font-semibold"
-               style="background: linear-gradient(135deg, var(--accent), var(--accent2));"
-               href="#contact">Записаться на созвон</a>
+        <div class="why-feat">
+          <div class="why-feat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="why-feat-text">
+            <strong>Сдаём в срок</strong>
+            <span>Чёткие дедлайны и ежедневная коммуникация. Если мы опаздываем — компенсируем.</span>
+          </div>
+        </div>
+        <div class="why-feat">
+          <div class="why-feat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <div class="why-feat-text">
+            <strong>Вкладываем душу</strong>
+            <span>Мы работаем только с проектами, в которые верим. Это отражается в каждой детали.</span>
           </div>
         </div>
       </div>
     </div>
-  </header>
 
-  <main id="top" class="pt-28">
-    <!-- Hero -->
-    <section class="relative">
-      <div class="blob w-[520px] h-[520px] -top-20 -left-36" style="background: var(--accent);"></div>
-      <div class="blob w-[520px] h-[520px] top-40 -right-40" style="background: var(--accent2);"></div>
-      <div class="blob w-[420px] h-[420px] top-[520px] left-1/3" style="background: var(--accent3); opacity:.14;"></div>
+    <div class="why-right reveal reveal-delay-2">
+      <div class="metric-card">
+        <div class="metric-num">48<sup>ч</sup></div>
+        <div class="metric-label">До первого макета</div>
+        <div class="metric-sub">Уже через 2 дня вы увидите концепцию своего сайта</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--bg)">∞</div>
+        <div class="metric-label" style="color:rgba(8,8,8,0.6)">Правок включено</div>
+        <div class="metric-sub" style="color:rgba(8,8,8,0.65)">Правим до полного утверждения без доплат</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">30<sup style="font-size:24px; color:var(--gold)">дн</sup></div>
+        <div class="metric-label">Бесплатная поддержка</div>
+        <div class="metric-sub">После сдачи проекта мы остаёмся на связи</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num">3<sup>×</sup></div>
+        <div class="metric-label">Рост конверсии</div>
+        <div class="metric-sub">Средний прирост конверсии у наших клиентов</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="grid lg:grid-cols-12 gap-10 items-center">
-          <div class="lg:col-span-7">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 text-white/70 mono text-xs">
-              <span class="inline-flex h-2 w-2 rounded-full" style="background: linear-gradient(135deg, var(--accent2), var(--accent));"></span>
-              Системный маркетинг для роста прибыли
-            </div>
+<!-- ── PRICING ── -->
+<section id="pricing">
+  <div class="pricing-header reveal">
+    <div class="section-label">Стоимость</div>
+    <h2 class="section-title">Прозрачные<br><em>цены</em></h2>
+    <p class="pricing-sub">Три пакета для разных задач. Все включают уникальный дизайн и исходники.</p>
+  </div>
 
-            <h1 class="mt-6 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.02]">
-              Мы строим <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, var(--accent2), var(--accent));">продажи</span>,
-              а не «запуски».
-            </h1>
+  <div class="pricing-grid">
+    <div class="pricing-card reveal reveal-delay-1">
+      <div class="pricing-tier">Старт</div>
+      <div class="pricing-price">от 80 000 ₸</div>
+      <div class="pricing-price-note">Лендинг / 1–3 страницы</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Уникальный дизайн в Figma
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Адаптив для всех устройств
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Форма обратной связи
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Базовая SEO-оптимизация
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Срок: 7–14 дней
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v5M8 11v1" stroke="#444" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="color:var(--text-dim)">Поддержка: 14 дней</span>
+        </li>
+      </ul>
+      <a href="#cta" class="pricing-btn pricing-btn-outline">Выбрать пакет</a>
+    </div>
 
-            <p class="mt-6 text-lg md:text-xl text-white/65 leading-relaxed max-w-2xl">
-              NOVA Growth Studio — команда, которая соединяет performance, креатив и аналитику в одну понятную систему:
-              лиды → сделки → LTV → масштабирование.
-            </p>
+    <div class="pricing-card featured reveal reveal-delay-2">
+      <div class="pricing-badge">Популярный выбор</div>
+      <div class="pricing-tier">Профессионал</div>
+      <div class="pricing-price">от 250 000 ₸</div>
+      <div class="pricing-price-note">Корпоративный сайт / 5–10 страниц</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Всё из пакета «Старт»
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Анимации и микровзаимодействия
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          CMS — редактор для клиента
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Подключение аналитики GA4
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Оптимизация Core Web Vitals
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#080808" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Поддержка: 30 дней
+        </li>
+      </ul>
+      <a href="#cta" class="pricing-btn pricing-btn-dark">Выбрать пакет</a>
+    </div>
 
-            <div class="mt-9 flex flex-col sm:flex-row gap-3">
-              <a href="#contact"
-                 class="btn inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold text-black"
-                 style="background: linear-gradient(135deg, var(--accent2), var(--accent)); box-shadow:0 18px 70px rgba(34,211,238,.18);">
-                Получить план роста за 7 минут
-                <svg class="ml-2" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
-                </svg>
-              </a>
+    <div class="pricing-card reveal reveal-delay-3">
+      <div class="pricing-tier">Премиум</div>
+      <div class="pricing-price">от 500 000 ₸</div>
+      <div class="pricing-price-note">Интернет-магазин / Веб-приложение</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Всё из пакета «Профессионал»
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Кастомная разработка логики
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Интеграция оплаты и доставки
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Личный кабинет пользователя
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Приоритетная поддержка: 90 дней
+        </li>
+        <li>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="#C9A96E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Персональный менеджер
+        </li>
+      </ul>
+      <a href="#cta" class="pricing-btn pricing-btn-outline">Выбрать пакет</a>
+    </div>
+  </div>
+</section>
 
-              <a href="#cases"
-                 class="btn inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold glass border border-white/10 hover:border-white/20 transition">
-                Посмотреть кейсы
-              </a>
-            </div>
+<!-- ── FAQ ── -->
+<section id="faq">
+  <div class="faq-layout">
+    <div class="reveal">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-title">Частые<br><em>вопросы</em></h2>
+      <p style="color:var(--text-muted); font-size:15px; margin-top:24px; line-height:1.8;">
+        Не нашли ответ? Напишите нам — ответим в течение 2 часов в рабочее время.
+      </p>
+    </div>
 
-            <div class="mt-10 grid sm:grid-cols-3 gap-4 max-w-2xl">
-              <div class="glass rounded-2xl p-4 border border-white/10">
-                <div class="mono text-xs text-white/55">Фокус</div>
-                <div class="mt-1 font-semibold">Unit-экономика & LTV</div>
-              </div>
-              <div class="glass rounded-2xl p-4 border border-white/10">
-                <div class="mono text-xs text-white/55">Скорость</div>
-                <div class="mt-1 font-semibold">Тесты 10–14 дней</div>
-              </div>
-              <div class="glass rounded-2xl p-4 border border-white/10">
-                <div class="mono text-xs text-white/55">Прозрачность</div>
-                <div class="mt-1 font-semibold">Дашборд + отчеты</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Hero side card -->
-          <div class="lg:col-span-5">
-            <div class="shine glass rounded-3xl p-6 md:p-7 border border-white/10 shadow-glow">
-              <div class="flex items-start justify-between gap-4">
-                <div>
-                  <div class="mono text-xs text-white/55">Быстрый диагностический аудит</div>
-                  <div class="mt-2 text-2xl font-bold">Где вы теряете деньги?</div>
-                  <p class="mt-2 text-white/65">
-                    За один созвон покажем: узкие места в воронке, что чинить первым, и где лежит самый дешевый рост.
-                  </p>
-                </div>
-                <div class="h-11 w-11 rounded-2xl flex items-center justify-center"
-                     style="background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(34,211,238,.12)); border:1px solid rgba(255,255,255,.10);">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 7h-9"/><path d="M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="mt-6 grid grid-cols-2 gap-3">
-                <div class="glass rounded-2xl p-4 border border-white/10">
-                  <div class="mono text-xs text-white/55">Результат</div>
-                  <div class="mt-1 text-xl font-extrabold">+18–42%</div>
-                  <div class="text-sm text-white/60">к прибыли после «починки»</div>
-                </div>
-                <div class="glass rounded-2xl p-4 border border-white/10">
-                  <div class="mono text-xs text-white/55">Срок</div>
-                  <div class="mt-1 text-xl font-extrabold">14 дней</div>
-                  <div class="text-sm text-white/60">первые измеримые сдвиги</div>
-                </div>
-              </div>
-
-              <div class="mt-6 flex items-center gap-3 text-sm text-white/60">
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 mono text-xs">
-                  META ADS
-                </span>
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 mono text-xs">
-                  TIKTOK
-                </span>
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass border border-white/10 mono text-xs">
-                  CRM / BI
-                </span>
-              </div>
-
-              <div class="mt-6">
-                <a href="#contact"
-                   class="btn w-full inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold text-black"
-                   style="background: linear-gradient(135deg, var(--accent), var(--accent2));">
-                  Записаться на аудит
-                </a>
-                <p class="mt-3 text-xs text-white/45">
-                  Никаких «волшебных кнопок». Только цифры, гипотезы, приоритеты.
-                </p>
-              </div>
-            </div>
+    <div class="faq-list reveal reveal-delay-2">
+      <div class="faq-item">
+        <div class="faq-question">
+          Сколько стоит сайт и из чего складывается цена?
+          <div class="faq-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
         </div>
-
-        <!-- Logos strip -->
-        <div class="mt-16 mb-8">
-          <div class="glass rounded-2xl border border-white/10 px-5 py-4">
-            <div class="mono text-xs text-white/50">Мы работали с командами в нишах</div>
-            <div class="mt-3 flex flex-wrap gap-2">
-              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">E-commerce</span>
-              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Retail</span>
-              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Education</span>
-              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Services</span>
-              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Beauty</span>
-              <span class="px-3 py-1 rounded-full glass border border-white/10 text-white/70 text-sm">Real Estate</span>
-            </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Цена зависит от объёма и сложности проекта. Лендинг — от 80 000 ₸, корпоративный сайт — от 250 000 ₸. В стоимость всегда входит: уникальный дизайн, адаптивная вёрстка, базовое SEO и поддержка. Точную стоимость рассчитываем после брифинга — это бесплатно.
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Services -->
-    <section id="services" class="py-20 md:py-28 border-t border-white/10">
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="flex items-end justify-between gap-6 flex-wrap">
-          <div>
-            <div class="mono text-xs tracking-widest text-white/55 uppercase">Услуги</div>
-            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Growth-стек под ключ</h2>
-            <p class="mt-4 text-white/65 max-w-2xl">
-              Мы не продаем «настройку рекламы». Мы продаем систему, где каждый шаг измерим и улучшает маржу.
-            </p>
+      <div class="faq-item">
+        <div class="faq-question">
+          Как долго разрабатывается сайт?
+          <div class="faq-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-          <a href="#contact" class="btn inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold glass border border-white/10 hover:border-white/20 transition">
-            Получить смету
-          </a>
         </div>
-
-        <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Card -->
-          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
-            <div class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10"
-                 style="background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.12));">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-              </svg>
-            </div>
-            <h3 class="mt-5 text-xl font-bold">Performance & Scale</h3>
-            <p class="mt-2 text-white/65">
-              Структура кампаний, события/конверсии, CAPI, сегментация по марже. Делаем рост управляемым.
-            </p>
-            <div class="mt-5 flex flex-wrap gap-2 text-xs mono text-white/55">
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">Meta</span>
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">TikTok</span>
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">Google</span>
-            </div>
-          </div>
-
-          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
-            <div class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10"
-                 style="background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(249,115,22,.12));">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
-              </svg>
-            </div>
-            <h3 class="mt-5 text-xl font-bold">Offer & Creative System</h3>
-            <p class="mt-2 text-white/65">
-              Офферы, углы, UGC-скрипты и серии креативов. Не «один ролик», а конвейер гипотез.
-            </p>
-            <div class="mt-5 flex flex-wrap gap-2 text-xs mono text-white/55">
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">UGC</span>
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">Motion</span>
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">Landing</span>
-            </div>
-          </div>
-
-          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
-            <div class="h-12 w-12 rounded-2xl flex items-center justify-center border border-white/10"
-                 style="background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(34,211,238,.12));">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>
-              </svg>
-            </div>
-            <h3 class="mt-5 text-xl font-bold">Analytics & BI</h3>
-            <p class="mt-2 text-white/65">
-              Сквозная аналитика, когортный анализ, ROMI/ROAS по марже. Дашборд для руководителя.
-            </p>
-            <div class="mt-5 flex flex-wrap gap-2 text-xs mono text-white/55">
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">GA4</span>
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">CRM</span>
-              <span class="px-2 py-1 rounded-lg glass border border-white/10">Looker</span>
-            </div>
-          </div>
-
-          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow lg:col-span-2">
-            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-              <div>
-                <div class="mono text-xs tracking-widest text-white/55 uppercase">Сильная сторона</div>
-                <h3 class="mt-2 text-2xl md:text-3xl font-extrabold">Воронки, которые «держат» масштаб</h3>
-                <p class="mt-3 text-white/65 max-w-2xl">
-                  Квиз/лендинг → прогрев → консультация → сделка → повторные продажи.
-                  Мы проектируем путь клиента так, чтобы рост не ломал качество.
-                </p>
-              </div>
-              <div class="glass rounded-2xl border border-white/10 p-4 md:min-w-[240px]">
-                <div class="mono text-xs text-white/55">Обычно улучшаем</div>
-                <ul class="mt-3 space-y-2 text-sm text-white/70">
-                  <li class="flex gap-2"><span class="text-white/40">•</span> CVR на лендинге</li>
-                  <li class="flex gap-2"><span class="text-white/40">•</span> Долю «целевых» лидов</li>
-                  <li class="flex gap-2"><span class="text-white/40">•</span> Конверсию в оплату</li>
-                  <li class="flex gap-2"><span class="text-white/40">•</span> LTV через CRM</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="glass rounded-3xl p-7 border border-white/10 hover:border-white/20 transition shadow-glow">
-            <div class="mono text-xs tracking-widest text-white/55 uppercase">Поддержка</div>
-            <h3 class="mt-2 text-2xl font-extrabold">Growth Squad</h3>
-            <p class="mt-3 text-white/65">
-              Еженедельные спринты: гипотезы → тесты → выводы → внедрение. Без «мы посмотрим через месяц».
-            </p>
-            <div class="mt-5 text-sm text-white/70">
-              <span class="mono text-xs text-white/55">Формат:</span> чат + созвоны + дашборд
-            </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Лендинг — 7–14 дней, корпоративный сайт — 21–30 дней, интернет-магазин — 30–45 дней. Сроки фиксируются в договоре. Если задерживаем по нашей вине — делаем скидку на следующий проект.
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Cases -->
-    <section id="cases" class="py-20 md:py-28 border-t border-white/10 relative overflow-hidden">
-      <div class="blob w-[520px] h-[520px] -bottom-44 -left-40" style="background: var(--accent2); opacity:.16;"></div>
-
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="flex items-end justify-between gap-6 flex-wrap">
-          <div>
-            <div class="mono text-xs tracking-widest text-white/55 uppercase">Кейсы</div>
-            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Цифры, которые можно проверить</h2>
-            <p class="mt-4 text-white/65 max-w-2xl">
-              Два примера (шаблон): замените тексты/картинки на свои — блоки уже готовы.
-            </p>
+      <div class="faq-item">
+        <div class="faq-question">
+          Смогу ли я сам редактировать сайт после запуска?
+          <div class="faq-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
         </div>
-
-        <div class="mt-12 space-y-10">
-          <!-- Case 1 -->
-          <article class="glass rounded-3xl border border-white/10 overflow-hidden group">
-            <div class="grid md:grid-cols-12">
-              <div class="md:col-span-7 min-h-[260px] md:min-h-[360px] relative">
-                <!-- Placeholder image -->
-                <div class="absolute inset-0"
-                     style="background:
-                       radial-gradient(circle at 20% 30%, rgba(34,211,238,.35), transparent 55%),
-                       radial-gradient(circle at 70% 60%, rgba(124,58,237,.35), transparent 55%),
-                       linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-                     ">
-                </div>
-                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                     style="background: linear-gradient(135deg, rgba(34,211,238,.12), rgba(124,58,237,.10));"></div>
-                <div class="absolute bottom-5 left-5 right-5 glass rounded-2xl border border-white/10 p-4">
-                  <div class="mono text-xs text-white/55">STACK</div>
-                  <div class="mt-1 flex flex-wrap gap-2 text-sm text-white/75">
-                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Meta CAPI</span>
-                    <span class="px-2 py-1 rounded-lg glass border border-white/10">UGC Pipeline</span>
-                    <span class="px-2 py-1 rounded-lg glass border border-white/10">CRM</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="md:col-span-5 p-6 md:p-8">
-                <div class="flex flex-wrap gap-2">
-                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">E-COM</span>
-                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">SCALING</span>
-                </div>
-                <h3 class="mt-4 text-2xl md:text-3xl font-extrabold">BloomBox — доставка подарков</h3>
-                <p class="mt-3 text-white/65">
-                  Пересобрали оффер, добавили события по марже, и выстроили серию креативов под разные сегменты.
-                </p>
-
-                <div class="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
-                  <div>
-                    <div class="text-3xl font-extrabold text-white">-32%</div>
-                    <div class="mono text-xs text-white/55 uppercase mt-1">CAC</div>
-                  </div>
-                  <div>
-                    <div class="text-3xl font-extrabold text-transparent bg-clip-text"
-                         style="background-image: linear-gradient(135deg, var(--accent2), var(--accent));">
-                      +68%
-                    </div>
-                    <div class="mono text-xs text-white/55 uppercase mt-1">Gross Profit</div>
-                  </div>
-                </div>
-
-                <div class="mt-6 text-sm text-white/55">
-                  <span class="mono">Фокус:</span> LTV + частота повторных покупок
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- Case 2 -->
-          <article class="glass rounded-3xl border border-white/10 overflow-hidden group">
-            <div class="grid md:grid-cols-12">
-              <div class="md:col-span-5 p-6 md:p-8 order-2 md:order-1">
-                <div class="flex flex-wrap gap-2">
-                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">SERVICES</span>
-                  <span class="mono text-xs px-3 py-1 rounded-full glass border border-white/10 text-white/65">FUNNEL</span>
-                </div>
-                <h3 class="mt-4 text-2xl md:text-3xl font-extrabold">Atlas Clinic — услуги с высоким чеком</h3>
-                <p class="mt-3 text-white/65">
-                  Убрали «мусорные» лиды: сегментация, квиз с фильтрами, прогрев + запись через CRM-скрипты.
-                </p>
-
-                <div class="mt-6 grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
-                  <div>
-                    <div class="text-3xl font-extrabold text-white">x2.4</div>
-                    <div class="mono text-xs text-white/55 uppercase mt-1">CR в оплату</div>
-                  </div>
-                  <div>
-                    <div class="text-3xl font-extrabold text-transparent bg-clip-text"
-                         style="background-image: linear-gradient(135deg, var(--accent), var(--accent3));">
-                      -41%
-                    </div>
-                    <div class="mono text-xs text-white/55 uppercase mt-1">CPL</div>
-                  </div>
-                </div>
-
-                <div class="mt-6 text-sm text-white/55">
-                  <span class="mono">Фокус:</span> качество лидов и скорость обработки
-                </div>
-              </div>
-
-              <div class="md:col-span-7 min-h-[260px] md:min-h-[360px] relative order-1 md:order-2">
-                <div class="absolute inset-0"
-                     style="background:
-                       radial-gradient(circle at 30% 35%, rgba(249,115,22,.32), transparent 55%),
-                       radial-gradient(circle at 70% 70%, rgba(124,58,237,.30), transparent 55%),
-                       linear-gradient(135deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
-                     ">
-                </div>
-                <div class="absolute inset-0 bg-black/10"></div>
-                <div class="absolute bottom-5 left-5 right-5 glass rounded-2xl border border-white/10 p-4">
-                  <div class="mono text-xs text-white/55">DELIVERABLES</div>
-                  <div class="mt-1 flex flex-wrap gap-2 text-sm text-white/75">
-                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Quiz</span>
-                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Scripts</span>
-                    <span class="px-2 py-1 rounded-lg glass border border-white/10">Dashboard</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Process -->
-    <section id="process" class="py-20 md:py-28 border-t border-white/10">
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="grid lg:grid-cols-12 gap-10">
-          <div class="lg:col-span-5">
-            <div class="mono text-xs tracking-widest text-white/55 uppercase">Процесс</div>
-            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Работаем спринтами</h2>
-            <p class="mt-4 text-white/65 leading-relaxed">
-              Каждые 7 дней — понятные результаты: что протестировали, что сработало, что масштабируем и почему.
-            </p>
-
-            <div class="mt-8 glass rounded-3xl border border-white/10 p-6">
-              <div class="mono text-xs text-white/55">Внутри спринта</div>
-              <div class="mt-3 grid gap-2 text-sm text-white/70">
-                <div class="flex gap-2"><span class="text-white/35">•</span> 3–8 гипотез</div>
-                <div class="flex gap-2"><span class="text-white/35">•</span> 5–20 креативов</div>
-                <div class="flex gap-2"><span class="text-white/35">•</span> 1–2 улучшения воронки</div>
-                <div class="flex gap-2"><span class="text-white/35">•</span> отчет + план следующей недели</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="lg:col-span-7">
-            <div class="space-y-4">
-              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
-                <div class="flex items-start gap-4">
-                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
-                       style="background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.12));">
-                    <span class="mono font-bold">01</span>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold">Диагностика & экономика</h3>
-                    <p class="mt-2 text-white/65">
-                      Считаем допустимый CAC, точку окупаемости, маржу и узкие места. Ставим KPI на прибыль.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
-                <div class="flex items-start gap-4">
-                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
-                       style="background: linear-gradient(135deg, rgba(124,58,237,.18), rgba(249,115,22,.12));">
-                    <span class="mono font-bold">02</span>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold">Стратегия тестов</h3>
-                    <p class="mt-2 text-white/65">
-                      Матрица гипотез: офферы, креативы, аудитории, лендинги. Приоритет по ожидаемому эффекту.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
-                <div class="flex items-start gap-4">
-                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
-                       style="background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(34,211,238,.12));">
-                    <span class="mono font-bold">03</span>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold">Запуск & оптимизация</h3>
-                    <p class="mt-2 text-white/65">
-                      Настраиваем события, запускаем тестовый бюджет, быстро режем слабое, усиливаем сильное.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="glass rounded-3xl border border-white/10 p-6 md:p-7">
-                <div class="flex items-start gap-4">
-                  <div class="h-11 w-11 rounded-2xl flex items-center justify-center border border-white/10"
-                       style="background: linear-gradient(135deg, rgba(34,211,238,.18), rgba(124,58,237,.12));">
-                    <span class="mono font-bold">04</span>
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold">Масштабирование</h3>
-                    <p class="mt-2 text-white/65">
-                      Добавляем объем без потери качества: новые сегменты, креативные серии, ретеншн и CRM.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Да! В пакете «Профессионал» и выше подключаем удобную CMS-систему. Вы сможете самостоятельно менять тексты, изображения и добавлять страницы без знания кода. Обучаем бесплатно в рамках проекта.
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Pricing / Format -->
-    <section id="pricing" class="py-20 md:py-28 border-t border-white/10">
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="mono text-xs tracking-widest text-white/55 uppercase">Формат</div>
-        <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Выберите режим работы</h2>
-        <p class="mt-4 text-white/65 max-w-2xl">
-          Тарифы — пример. Замените под вашу экономику. Важнее не «дешево/дорого», а окупаемость.
-        </p>
-
-        <div class="mt-12 grid lg:grid-cols-3 gap-6">
-          <div class="glass rounded-3xl border border-white/10 p-7 shadow-glow">
-            <div class="mono text-xs text-white/55">START</div>
-            <div class="mt-2 text-2xl font-extrabold">Аудит + план</div>
-            <p class="mt-3 text-white/65">Разовая работа: найти утечки и дать четкий roadmap.</p>
-            <ul class="mt-6 space-y-2 text-sm text-white/70">
-              <li class="flex gap-2"><span class="text-white/35">•</span> диагностика экономики</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> карта тестов на 30 дней</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> рекомендации по воронке</li>
-            </ul>
-            <a href="#contact" class="mt-7 btn inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-semibold glass border border-white/10 hover:border-white/20 transition">
-              Запросить
-            </a>
+      <div class="faq-item">
+        <div class="faq-question">
+          Вы работаете с клиентами из других городов и стран?
+          <div class="faq-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-
-          <div class="glass rounded-3xl border border-white/10 p-7 shadow-glow relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl opacity-30"
-                 style="background: linear-gradient(135deg, var(--accent), var(--accent2));"></div>
-            <div class="flex items-center justify-between">
-              <div class="mono text-xs text-white/55">GROWTH</div>
-              <span class="mono text-[11px] px-2 py-1 rounded-full border border-white/10 glass text-white/70">POPULAR</span>
-            </div>
-            <div class="mt-2 text-2xl font-extrabold">Спринты 4 недели</div>
-            <p class="mt-3 text-white/65">Плотная работа «под ключ»: трафик + креатив + аналитика.</p>
-            <ul class="mt-6 space-y-2 text-sm text-white/70">
-              <li class="flex gap-2"><span class="text-white/35">•</span> 4 спринта тестов</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> креативная матрица</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> отчетность и дашборд</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> оптимизация воронки</li>
-            </ul>
-            <a href="#contact"
-               class="mt-7 btn inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-semibold text-black"
-               style="background: linear-gradient(135deg, var(--accent2), var(--accent));">
-              Обсудить проект
-            </a>
-          </div>
-
-          <div class="glass rounded-3xl border border-white/10 p-7 shadow-glow">
-            <div class="mono text-xs text-white/55">PARTNER</div>
-            <div class="mt-2 text-2xl font-extrabold">Долгосрочно</div>
-            <p class="mt-3 text-white/65">Если вы готовы масштабироваться 3–6 месяцев и строить систему.</p>
-            <ul class="mt-6 space-y-2 text-sm text-white/70">
-              <li class="flex gap-2"><span class="text-white/35">•</span> growth squad</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> CRM + ретеншн</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> продюсирование контента</li>
-              <li class="flex gap-2"><span class="text-white/35">•</span> стратегия по марже</li>
-            </ul>
-            <a href="#contact" class="mt-7 btn inline-flex w-full items-center justify-center rounded-2xl px-5 py-3 font-semibold glass border border-white/10 hover:border-white/20 transition">
-              Узнать условия
-            </a>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Абсолютно. Большинство наших клиентов — удалённые. Весь процесс выстроен онлайн: встречи в Zoom, задачи в Notion, дизайн в Figma с доступом для клиента. Договор заключаем дистанционно.
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- FAQ -->
-    <section id="faq" class="py-20 md:py-28 border-t border-white/10">
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="grid lg:grid-cols-12 gap-10">
-          <div class="lg:col-span-5">
-            <div class="mono text-xs tracking-widest text-white/55 uppercase">FAQ</div>
-            <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Частые вопросы</h2>
-            <p class="mt-4 text-white/65">
-              Коротко и по делу. Если нужен разбор именно вашей ситуации — лучше созвон.
-            </p>
+      <div class="faq-item">
+        <div class="faq-question">
+          Что происходит после сдачи проекта?
+          <div class="faq-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-
-          <div class="lg:col-span-7 space-y-4">
-            <details class="glass rounded-2xl border border-white/10 p-6 group">
-              <summary class="cursor-pointer list-none flex items-center justify-between gap-4">
-                <span class="font-semibold">Сколько нужен рекламный бюджет, чтобы начать?</span>
-                <span class="h-9 w-9 rounded-xl glass border border-white/10 flex items-center justify-center group-open:rotate-180 transition">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </span>
-              </summary>
-              <p class="mt-4 text-white/65 leading-relaxed">
-                Старт зависит от чека и конверсий. Как правило, мы рекомендуем бюджет, который позволяет собрать
-                статистику за 7–10 дней (иначе алгоритмы «слепые»). На аудите посчитаем минимально жизнеспособный объем.
-              </p>
-            </details>
-
-            <details class="glass rounded-2xl border border-white/10 p-6 group">
-              <summary class="cursor-pointer list-none flex items-center justify-between gap-4">
-                <span class="font-semibold">Вы даете гарантии по продажам?</span>
-                <span class="h-9 w-9 rounded-xl glass border border-white/10 flex items-center justify-center group-open:rotate-180 transition">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </span>
-              </summary>
-              <p class="mt-4 text-white/65 leading-relaxed">
-                Мы гарантируем прозрачный процесс, корректную настройку и управление тестами по данным.
-                Прогноз по продажам делаем после первичных тестов, когда видим реальную экономику и конверсии.
-              </p>
-            </details>
-
-            <details class="glass rounded-2xl border border-white/10 p-6 group">
-              <summary class="cursor-pointer list-none flex items-center justify-between gap-4">
-                <span class="font-semibold">Кто будет делать креативы?</span>
-                <span class="h-9 w-9 rounded-xl glass border border-white/10 flex items-center justify-center group-open:rotate-180 transition">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 9l6 6 6-6"/>
-                  </svg>
-                </span>
-              </summary>
-              <p class="mt-4 text-white/65 leading-relaxed">
-                У нас конвейер: стратегия → сценарии → монтаж/моушн → тест → итерации. Если у вас есть продакшн —
-                интегрируемся и дадим ТЗ/матрицу, чтобы контент «продавал», а не просто выглядел красиво.
-              </p>
-            </details>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Передаём все исходники, исходный код и доступы. Предоставляем бесплатную поддержку на 30 дней (в пакете «Профессионал»). Для долгосрочного сотрудничества предлагаем выгодный пакет поддержки от 15 000 ₸/мес.
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- Contact -->
-    <section id="contact" class="py-20 md:py-28 border-t border-white/10 relative overflow-hidden">
-      <div class="blob w-[560px] h-[560px] -top-40 right-[-220px]" style="background: var(--accent); opacity:.16;"></div>
-
-      <div class="mx-auto max-w-7xl px-6">
-        <div class="glass rounded-[28px] border border-white/10 p-7 md:p-10 shadow-glow">
-          <div class="grid lg:grid-cols-12 gap-10 items-start">
-            <div class="lg:col-span-6">
-              <div class="mono text-xs tracking-widest text-white/55 uppercase">Контакт</div>
-              <h2 class="mt-2 text-3xl md:text-5xl font-extrabold tracking-tight">Давайте соберем план роста</h2>
-              <p class="mt-4 text-white/65 leading-relaxed">
-                Оставьте заявку — вернемся с вопросами и предложим 2–3 сценария масштабирования.
-              </p>
-
-              <div class="mt-8 grid sm:grid-cols-2 gap-4">
-                <div class="glass rounded-2xl border border-white/10 p-5">
-                  <div class="mono text-xs text-white/55">Ответ</div>
-                  <div class="mt-1 font-semibold">в течение дня</div>
-                </div>
-                <div class="glass rounded-2xl border border-white/10 p-5">
-                  <div class="mono text-xs text-white/55">Формат</div>
-                  <div class="mt-1 font-semibold">15–25 минут</div>
-                </div>
-              </div>
-
-              <div class="mt-8 text-sm text-white/60">
-                <div class="mono text-xs text-white/55">Или напишите сразу:</div>
-                <div class="mt-2 flex flex-wrap gap-3">
-                  <a class="btn inline-flex items-center gap-2 rounded-2xl px-4 py-3 glass border border-white/10 hover:border-white/20 transition"
-                     href="https://wa.me/7066377126" target="_blank" rel="noreferrer">
-                    WhatsApp
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
-                    </svg>
-                  </a>
-                  <a class="btn inline-flex items-center gap-2 rounded-2xl px-4 py-3 glass border border-white/10 hover:border-white/20 transition"
-                     href="mailto:hello@novastudio.com">
-                    Email
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/>
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="lg:col-span-6">
-              <!-- Pure frontend form (placeholder). Hook it to your backend as needed. -->
-              <form class="grid gap-4">
-                <div class="grid md:grid-cols-2 gap-4">
-                  <label class="grid gap-2">
-                    <span class="mono text-xs text-white/55">Имя</span>
-                    <input required
-                      class="h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-white placeholder:text-white/35 focus:border-white/20"
-                      placeholder="Как к вам обращаться?" />
-                  </label>
-                  <label class="grid gap-2">
-                    <span class="mono text-xs text-white/55">Телефон / Telegram</span>
-                    <input required
-                      class="h-12 rounded-2xl bg-white/5 border border-white/10 px-4 text-white placeholder:text-white/35 focus:border-white/20"
-                      placeholder="+7 (___) ___-__-__" />
-                  </label>
-                </div>
-
-                <label class="grid gap-2">
-                  <span class="mono text-xs text-white/55">О проекте</span>
-                  <textarea rows="4"
-                    class="rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-white placeholder:text-white/35 focus:border-white/20"
-                    placeholder="Ниша, средний чек, что уже пробовали, цель на 1–3 месяца"></textarea>
-                </label>
-
-                <button type="button"
-                  class="btn inline-flex items-center justify-center rounded-2xl px-6 py-4 font-semibold text-black"
-                  style="background: linear-gradient(135deg, var(--accent2), var(--accent));">
-                  Отправить заявку
-                </button>
-
-                <p class="text-xs text-white/45">
-                  Нажимая «Отправить», вы соглашаетесь на обработку данных. (Текст можно заменить на ваш.)
-                </p>
-              </form>
-            </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          Какие технологии используете?
+          <div class="faq-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </div>
-
-          <div class="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/55">
-            <p>© 2026 NOVA Growth Studio. Almaty / Remote.</p>
-            <p class="mono text-xs">Made for speed • No heavy UI frameworks</p>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Для дизайна — Figma. Для фронтенда — React, Next.js, Tailwind CSS. Для бэкенда — Node.js, Supabase. Для CMS — Sanity, Strapi. Подбираем стек индивидуально под задачу — без переплаты за лишние технологии.
           </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
+</section>
 
-  <script>
-    // Mobile menu
-    const mobileBtn = document.getElementById('mobileBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    mobileBtn?.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+<!-- ── CTA ── -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-glow"></div>
+  <div class="section-label reveal">Начать работу</div>
+  <h2 class="cta-title reveal reveal-delay-1">
+    Готовы создать<br><em>что-то</em><br>великое?
+  </h2>
+  <p class="cta-sub reveal reveal-delay-2">
+    Расскажите о своём проекте — ответим в течение 2 часов
+    и предложим решение именно для вашей задачи.
+  </p>
+  <div class="cta-actions reveal reveal-delay-3">
+    <a href="#cta" class="btn-primary" style="font-size:14px; padding:20px 48px;">
+      <span>Написать нам</span>
+      <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+        <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+   
+  </div>
+</section>
 
-    // Lightweight animated background (particles + gradient glow)
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="#" class="footer-logo">FORM<span>A</span></a>
+      <p class="footer-tagline">
+        Создаём цифровые продукты, которые помогают бизнесу расти.
+        Качество, скорость, результат.
+      </p>
+      <div class="footer-socials">
+        <a href="#" class="footer-social">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 2H3v16l4-4h14V2zM8 10h8M8 6h4"/></svg>
+        </a>
+        <a href="#" class="footer-social">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.26 6.26 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.79 1.53V6.77a4.85 4.85 0 01-1.02-.08z"/></svg>
+        </a>
+        <a href="#" class="footer-social">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </a>
+      </div>
+    </div>
 
-    let w, h, dpr;
-    function resize(){
-      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
-      w = canvas.width  = Math.floor(window.innerWidth  * dpr);
-      h = canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-    }
-    window.addEventListener('resize', resize, { passive:true });
-    resize();
+    <div>
+      <div class="footer-col-title">Услуги</div>
+      <ul class="footer-links">
+        <li><a href="#services">Лендинги</a></li>
+        <li><a href="#services">Корпоративные сайты</a></li>
+        <li><a href="#services">Интернет-магазины</a></li>
+        <li><a href="#services">UI/UX Дизайн</a></li>
+        <li><a href="#services">SEO & Аналитика</a></li>
+        <li><a href="#services">Брендинг</a></li>
+      </ul>
+    </div>
 
-    const N = 78;
-    const pts = Array.from({length:N}, () => ({
-      x: Math.random()*w,
-      y: Math.random()*h,
-      vx: (Math.random()-0.5)*0.18*dpr,
-      vy: (Math.random()-0.5)*0.18*dpr,
-      r: (Math.random()*1.8 + 0.6)*dpr,
-      t: Math.random()
-    }));
+    <div>
+      <div class="footer-col-title">Компания</div>
+      <ul class="footer-links">
+        <li><a href="#process">Как мы работаем</a></li>
+        <li><a href="#why">Почему мы</a></li>
+        <li><a href="#pricing">Стоимость</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#">Блог</a></li>
+      </ul>
+    </div>
 
-    function draw(){
-      ctx.clearRect(0,0,w,h);
+    <div>
+      <div class="footer-col-title">Контакты</div>
+      <ul class="footer-links">
+        <li><a href="mailto:hello@forma.kz">hello@forma.kz</a></li>
+        <li><a href="https://t.me/forma_studio">Telegram</a></li>
+        <li><a href="tel:+77066377126">+7 706 637 7126</a></li>
+        <li style="color:var(--text-dim); font-size:13px; padding-top:8px;">Казахстан, Шымкент</li>
+        <li style="color:var(--text-dim); font-size:13px;">Пн–Пт, 9:00–18:00</li>
+      </ul>
+    </div>
+  </div>
 
-      // soft vignette
-      const g = ctx.createRadialGradient(w*0.5, h*0.2, 0, w*0.5, h*0.2, Math.max(w,h));
-      g.addColorStop(0, 'rgba(124,58,237,0.10)');
-      g.addColorStop(0.5, 'rgba(34,211,238,0.07)');
-      g.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,w,h);
+  <div class="footer-bottom">
+    <span>© 2026 Focus Все права защищены.</span>
+    <span>Сделано с <span style="color:var(--gold)">♥</span> в Шымкенте</span>
+    <span><a href="#">Политика конфиденциальности</a></span>
+  </div>
+</footer>
 
-      // connections
-      ctx.lineWidth = 1 * dpr;
-      for(let i=0;i<N;i++){
-        const a = pts[i];
-        a.x += a.vx; a.y += a.vy;
-        if(a.x<0 || a.x>w) a.vx *= -1;
-        if(a.y<0 || a.y>h) a.vy *= -1;
+<script>
+  // ── CURSOR ──
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+  (function animRing() {
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(animRing);
+  })();
 
-        for(let j=i+1;j<N;j++){
-          const b = pts[j];
-          const dx = a.x-b.x, dy=a.y-b.y;
-          const dist = Math.sqrt(dx*dx+dy*dy);
-          if(dist < 140*dpr){
-            const alpha = (1 - dist/(140*dpr)) * 0.22;
-            ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-            ctx.beginPath();
-            ctx.moveTo(a.x,a.y);
-            ctx.lineTo(b.x,b.y);
-            ctx.stroke();
-          }
-        }
-      }
+  // ── NAV SCROLL ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 80);
+  });
 
-      // points
-      for(const p of pts){
-        const accent = p.t > 0.92;
-        ctx.fillStyle = accent ? 'rgba(34,211,238,0.75)' : 'rgba(255,255,255,0.35)';
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fill();
-      }
+  // ── SCROLL REVEAL ──
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => io.observe(el));
 
-      requestAnimationFrame(draw);
-    }
-    draw();
+  // ── FAQ ──
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.parentElement;
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
 
-    // GSAP reveals (optional)
-    if (window.gsap) {
-      gsap.registerPlugin(ScrollTrigger);
+  // ── COUNTER ANIMATION ──
+  function animCount(el, target, suffix='') {
+    let start = 0; const dur = 1800;
+    const step = ts => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(ease * target) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
 
-      gsap.from("h1, .hero-card, .hero-content", {
-        opacity: 0,
-        y: 20,
-        duration: 1,
-        stagger: 0.08,
-        ease: "power3.out"
-      });
-
-      gsap.utils.toArray("section").forEach((sec) => {
-        gsap.from(sec.querySelectorAll("h2, h3, p, article, .glass"), {
-          opacity: 0,
-          y: 26,
-          duration: 0.9,
-          stagger: 0.05,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: sec,
-            start: "top 78%",
-            once: true
-          }
-        });
-      });
-    }
-  </script>
+  // ── SMOOTH LINKS ──
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href');
+      if (id === '#') return;
+      const target = document.querySelector(id);
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+</script>
 </body>
 </html>
